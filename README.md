@@ -1,3 +1,9 @@
+Randomizer for Bravely Default and Bravely Second with Visual HTML Spoiler Logs
+
+Currently a work in progress. Check back later for updated files
+
+---
+
 ### ABOUT
 
 This is a randomizer for Bravely Default: Where the Fairy Flies and
