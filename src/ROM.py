@@ -7,6 +7,7 @@ from Abilities import ABILITIES_BD, ABILITIES_BS
 from Shop import SHOP, SHOP_BD
 from Magic import MAGIC_BD, MAGIC_BS
 from Treasures import TREASURES
+from spoiler_html import writeHTML
 import os
 import shutil
 import random
@@ -150,11 +151,22 @@ class BS(ROM):
             self.jobs.shuffleAptitudes()
 
     def printLogs(self):
-        temp = sys.stdout
-        sys.stdout = open(os.path.join(self.pathOut, 'spoiler.log'), 'w', encoding='utf-8')
-        self.jobs.print()
-        self.magic.print()
-        sys.stdout = temp
+        spoiler_data = {"game": self.settings.get("game"),
+                        "seed": self.seed,
+                        "jobs": self.jobs.to_spoiler_data(),
+                        "magic": self.magic.to_spoiler_data()}
+    
+        # Keep existing text log
+        with open(os.path.join(self.pathOut, "spoiler.log"), "w") as f:
+            sys.stdout = f
+            self.jobs.print()
+            self.magic.print()
+            if hasattr(self, "treasures"):
+                self.treasures.print()
+            sys.stdout = sys.__stdout__
+    
+        # New HTML log
+        write_html(spoiler_data, os.path.join(self.pathOut, "spoiler.html"))
         
 
 
@@ -195,9 +207,19 @@ class BD(ROM):
             self.treasures.shuffleTreasures()
             
     def printLogs(self):
-        temp = sys.stdout
-        sys.stdout = open(os.path.join(self.pathOut, 'spoiler.log'), 'w', encoding='utf-8')
-        self.jobs.print()
-        self.magic.print()
-        self.treasures.print()
-        sys.stdout = temp
+        spoiler_data = {"game": self.settings.get("game"),
+                        "seed": self.seed,
+                        "jobs": self.jobs.to_spoiler_data(),
+                        "magic": self.magic.to_spoiler_data()}
+    
+        # Keep existing text log
+        with open(os.path.join(self.pathOut, "spoiler.log"), "w") as f:
+            sys.stdout = f
+            self.jobs.print()
+            self.magic.print()
+            if hasattr(self, "treasures"):
+                self.treasures.print()
+            sys.stdout = sys.__stdout__
+    
+        # New HTML log
+        write_html(spoiler_data, os.path.join(self.pathOut, "spoiler.html"))
