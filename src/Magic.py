@@ -68,6 +68,32 @@ class MAGIC:
             redMageFile.patchValue(abilId, row, 1)
             redMageFile.patchValue(itemId, row, 2)
 
+    def to_spoiler_data(self):
+        mages = []
+        for fileName, name in self.abilities.fileToMage.items():
+            fileObj = self.abilities.crowdFiles[fileName]
+            levels = fileObj.readCol(0)
+            comAbilIds = fileObj.readCol(1)
+            itemIds = fileObj.readCol(2)
+            by_level = {i: [] for i in range(1, 9)}
+            for level, abilId, itemId in zip(levels, comAbilIds, itemIds):
+                by_level[level].append({
+                    'id': abilId,
+                    'name': self.abilities.getName(abilId),
+                    'item_id': itemId,
+                    'item_name': self.items.getName(itemId),
+                })
+            mages.append({
+                'file': fileName,
+                'name': name,
+                'levels': [
+                    {'level': level, 'spells': spells}
+                    for level, spells in by_level.items()
+                    if spells
+                ],
+            })
+        return {'mages': mages}
+
     def print(self):
         print('')
         print('')

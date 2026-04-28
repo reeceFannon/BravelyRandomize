@@ -27,14 +27,8 @@ class JOBS:
             value = candidates.pop()
             jobFile.patchValue(value, 0, 12)
 
-    # PRINTOUTS!
-    def print(self):
-        print('==============')
-        print('JOB AFFINITIES')
-        print('==============')
-        print('')
-        print('')
-        stats = {
+    def _stat_columns(self):
+        return {
             'HP': 4,
             'MP': 5,
             'STR': 6,
@@ -44,6 +38,28 @@ class JOBS:
             'AGI': 10,
             'DEX': 11,
         }
+
+    def get_stat_affinities(self):
+        stats = self._stat_columns()
+        return [
+            {
+                'job': job,
+                'stats': {key: jobFile.readValue(0, col) for key, col in stats.items()},
+            }
+            for job, jobFile in self.jobFiles.items()
+        ]
+
+    def to_spoiler_data(self):
+        return {'stat_affinities': self.get_stat_affinities()}
+
+    # PRINTOUTS!
+    def print(self):
+        print('==============')
+        print('JOB AFFINITIES')
+        print('==============')
+        print('')
+        print('')
+        stats = self._stat_columns()
         header = ' '*20
         for key in stats:
             header += key.rjust(6, ' ')
@@ -103,6 +119,44 @@ class JOBS_BD(JOBS):
                 if abilities[i] and abilities[i] < 1000:
                     abilities[i] = candidates.pop()
             jobFile.patchCol(abilities, 13)
+
+    def get_job_abilities(self):
+        rows = []
+        for job, jobFile in self.jobFiles.items():
+            specID = jobFile.readValue(0, 12)
+            abilities = []
+            abilIds = jobFile.readCol(13)
+            jobComm = jobFile.readCol(16)
+            for level, (abilId, jobComId) in enumerate(zip(abilIds, jobComm), start=1):
+                if abilId == 0:
+                    ability_id = jobComId
+                    ability_type = 'magic_or_summon_level'
+                elif abilId < 1000:
+                    ability_id = abilId
+                    ability_type = 'command'
+                else:
+                    ability_id = abilId
+                    ability_type = 'support'
+                entry = {
+                    'level': level,
+                    'id': ability_id,
+                    'name': self.abilities.getName(ability_id),
+                    'type': ability_type,
+                }
+                if ability_type == 'support':
+                    entry['sp_cost'] = self.abilities.getSupCosts(ability_id)
+                abilities.append(entry)
+            rows.append({
+                'job': job,
+                'specialty': {'id': specID, 'name': self.abilities.getName(specID)},
+                'abilities': abilities,
+            })
+        return rows
+
+    def to_spoiler_data(self):
+        data = super().to_spoiler_data()
+        data['job_abilities'] = self.get_job_abilities()
+        return data
 
     def printAbilities(self):
         print('=============')
@@ -275,36 +329,75 @@ class JOBS_BS(JOBS):
                     abilities[i] = candidates.pop()
             jobFile.patchCol(abilities, 13)
 
+    def _equipment_columns(self):
+        return {
+            'Swords': 9, 'Axes': 10, 'Spears': 11, 'Rods': 12,
+            'Staves': 13, 'Daggers': 14, 'Bows': 15, 'Katana': 16,
+            'Knuckles': 17, 'G. Swds': 18, 'Pistols': 19, 'Shields': 24,
+            'Helms': 21, 'Armor': 22,
+        }
+
+    def _aptitude_grades(self):
+        return {200: 'S', 180: 'A', 160: 'B', 140: 'C', 120: 'D', 100: 'E'}
+
+    def get_equipment_aptitudes(self):
+        equip = self._equipment_columns()
+        aptToGrade = self._aptitude_grades()
+        rows = []
+        for row, job in enumerate(self.jobFiles.keys()):
+            aptitudes = {}
+            for key, col in equip.items():
+                value = self.jobTable.readValue(row, col)
+                aptitudes[key] = {'value': value, 'grade': aptToGrade[value]}
+            rows.append({'job': job, 'aptitudes': aptitudes})
+        return rows
+
+    def get_job_abilities(self):
+        rows = []
+        for job, jobFile in self.jobFiles.items():
+            specID = jobFile.readValue(0, 12)
+            abilities = []
+            abilIds = jobFile.readCol(13)
+            jobComm = jobFile.readCol(14)
+            craftIds = jobFile.readCol(15)
+            for level, (abilId, jobComId, craftId) in enumerate(zip(abilIds, jobComm, craftIds), start=1):
+                ability_id = max(abilId, jobComId, craftId)
+                if ability_id < 3000:
+                    ability_type = 'job_or_magic_command'
+                elif ability_id < 20000:
+                    ability_type = 'command'
+                else:
+                    ability_type = 'support'
+                entry = {
+                    'level': level,
+                    'id': ability_id,
+                    'name': self.abilities.getName(ability_id),
+                    'type': ability_type,
+                }
+                if ability_type == 'support':
+                    entry['sp_cost'] = self.abilities.getSupCosts(ability_id)
+                abilities.append(entry)
+            rows.append({
+                'job': job,
+                'specialty': {'id': specID, 'name': self.abilities.getName(specID)},
+                'abilities': abilities,
+            })
+        return rows
+
+    def to_spoiler_data(self):
+        data = super().to_spoiler_data()
+        data['equipment_aptitudes'] = self.get_equipment_aptitudes()
+        data['job_abilities'] = self.get_job_abilities()
+        return data
+
     def printAptitudes(self):
         print('=============')
         print('JOB APTITUDES')
         print('=============')
         print('')
         print('')
-        equip = {
-            'Swords': 9,
-            'Axes': 10,
-            'Spears': 11,
-            'Rods': 12,
-            'Staves': 13,
-            'Daggers': 14,
-            'Bows': 15,
-            'Katana': 16,
-            'Knuckles': 17,
-            'G. Swds': 18,
-            'Pistols': 19,
-            'Shields': 24,
-            'Helms': 21,
-            'Armor': 22,
-        }
-        aptToGrade = {
-            200: 'S',
-            180: 'A',
-            160: 'B',
-            140: 'C',
-            120: 'D',
-            100: 'E',
-        }
+        equip = self._equipment_columns()
+        aptToGrade = self._aptitude_grades()
         header = ' '*20
         for key in equip:
             header += key.rjust(10, ' ')
