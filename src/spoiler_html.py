@@ -80,5 +80,5 @@ def render_html(spoiler_data: dict) -> str:
   return "\n".join(html)
 
 
-def write_html(spoiler_data: dict, path: str):
+def writeHTML(spoiler_data: dict, path: str):
   with open(path, "w", encoding="utf-8") as f: f.write(render_html(spoiler_data))
