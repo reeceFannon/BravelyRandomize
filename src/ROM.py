@@ -157,7 +157,7 @@ class BS(ROM):
                         "magic": self.magic.to_spoiler_data()}
     
         # Keep existing text log
-        with open(os.path.join(self.pathOut, "spoiler.log"), "w") as f:
+        with open(os.path.join(self.pathOut, "spoiler.log"), "w", encoding = "utf-8") as f:
             sys.stdout = f
             self.jobs.print()
             self.magic.print()
@@ -213,7 +213,7 @@ class BD(ROM):
                         "magic": self.magic.to_spoiler_data()}
     
         # Keep existing text log
-        with open(os.path.join(self.pathOut, "spoiler.log"), "w") as f:
+        with open(os.path.join(self.pathOut, "spoiler.log"), "w", encoding = "utf-8") as f:
             sys.stdout = f
             self.jobs.print()
             self.magic.print()
