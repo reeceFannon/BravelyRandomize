@@ -90,4 +90,5 @@ def render_html(spoiler_data: dict) -> str:
 
 
 def writeHTML(spoiler_data: dict, path: str):
-  with open(path, "w", encoding="utf-8") as f: f.write(render_html(spoiler_data))
+  spoilers = render_html(spoiler_data)
+  with open(path, "w", encoding="utf-8") as f: f.write(spoilers)
