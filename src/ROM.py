@@ -166,7 +166,7 @@ class BS(ROM):
             sys.stdout = sys.__stdout__
     
         # New HTML log
-        write_html(spoiler_data, os.path.join(self.pathOut, "spoiler.html"))
+        writeHTML(spoiler_data, os.path.join(self.pathOut, "spoiler.html"))
         
 
 
@@ -222,4 +222,4 @@ class BD(ROM):
             sys.stdout = sys.__stdout__
     
         # New HTML log
-        write_html(spoiler_data, os.path.join(self.pathOut, "spoiler.html"))
+        writeHTML(spoiler_data, os.path.join(self.pathOut, "spoiler.html"))
