@@ -118,4 +118,66 @@ class TREASURES:
         print('')
         print('')
         print('')
+
+    def to_spoiler_data(self):
+        if not hasattr(self, "fileToLoc"):
+            self.fileToLoc = {
+                'EV_10.trb': '????????? ("SmallAirShip")',
+                'EV_15.trb': 'SS Funky Francisca',
+                'ND_10.trb': 'Norende Ravine',
+                'ND_11.trb': 'Ruins of Centro Keep',
+                'ND_12.trb': 'Lontano Villa',
+                'ND_13.trb': 'Temple of Wind',
+                'ND_14.trb': 'Vestment Cave',
+                'ND_15.trb': 'Harena Ruins',
+                'ND_16.trb': 'Grand Mill Works',
+                'ND_17.trb': 'Miasma Woods',
+                'ND_18.trb': 'Mount Framentum',
+                'ND_19.trb': 'Temple of Water',
+                'ND_20.trb': 'Witherwood',
+                'ND_21.trb': 'Florem Gardens',
+                'ND_22.trb': 'Twilight Ruins',
+                'ND_23.trb': 'Mythril Mines',
+                'ND_24.trb': 'Underflow',
+                'ND_25.trb': 'Temple of Fire',
+                'ND_26.trb': 'Starkfort Interior',
+                'ND_27.trb': 'Grapp Keep',
+                'ND_28.trb': 'Engine Room',
+                'ND_29.trb': 'Central Command',
+                'ND_30.trb': 'Everlast Tower & Temple of Earth',
+                'ND_31.trb': 'Vampire Castle',
+                'ND_32.trb': 'Dark Aurora',
+                'ND_33.trb': "Dimension's Hasp",
+                'TW_10.trb': 'Kindom of Caldisla',
+                'TW_11.trb': 'Ancheim',
+                'TW_12.trb': 'Yulyana Woods Needlworks',
+                'TW_13.trb': 'Florem',
+                'TW_14.trb': 'Grandship',
+                'TW_16.trb': 'Hartschild',
+                'TW_17.trb': 'Starkfort',
+                'TW_18.trb': 'Eternia',
+                'TW_19.trb': 'Gravemark Village',
+                'TW_20.trb': 'Grandship (Airship, Ch. 6+)'
+            }
+
+        locations = []
+
+        for fileName, location in self.fileToLoc.items():
+            table = self.treasureFiles[fileName]
+            itemID = table.readCol(1)
+            money = table.readCol(2)
+            num = table.readCol(3)
+
+            treasures = []
+
+            for i, m, n in zip(itemID, money, num):
+                if not any([i, m, n]): continue
+
+                if m: treasures.append({"type": "money", "name": f"{m} pg", "amount": m})
+                elif n > 2: treasures.append({"type": "item", "name": self.items.getName(i), "quantity": n})
+                else: treasures.append({"type": "item", "name": self.items.getName(i), "quantity": 1})
+
+            if treasures: locations.append({"file": fileName, "location": location, "treasures": treasures})
+
+        return {"locations": locations}
             

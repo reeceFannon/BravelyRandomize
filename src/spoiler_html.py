@@ -117,6 +117,30 @@ def render_html(spoiler_data: dict) -> str:
 
             append("</table>")
 
+    treasures = spoiler_data.get("treasures", {})
+
+    if treasures:
+        treasure_locations = treasures.get("locations", [])
+
+        if treasure_locations:
+            append("<h2>Treasures</h2>")
+
+            for loc in treasure_locations:
+                append(f"<h3>{esc(loc.get('location', ''))}</h3>")
+                append("<table>")
+                append("<tr><th>Treasure</th><th>Quantity</th></tr>")
+
+                for t in loc.get("treasures", []):
+                    quantity = t.get("quantity", "")
+                    append(
+                        f"<tr>"
+                        f"<td>{esc(t.get('name', ''))}</td>"
+                        f"<td>{esc(quantity)}</td>"
+                        f"</tr>"
+                    )
+
+                append("</table>")
+
     append("</body></html>")
     return "\n".join(html_parts)
 

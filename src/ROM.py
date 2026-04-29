@@ -210,7 +210,8 @@ class BD(ROM):
         spoiler_data = {"game": self.settings.get("game"),
                         "seed": self.seed,
                         "jobs": self.jobs.to_spoiler_data(),
-                        "magic": self.magic.to_spoiler_data()}
+                        "magic": self.magic.to_spoiler_data(),
+                        "treasures": self.treasures.to_spoiler_data()}
     
         # Keep existing text log
         with open(os.path.join(self.pathOut, "spoiler.log"), "w", encoding = "utf-8") as f:
