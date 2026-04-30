@@ -22,28 +22,32 @@ def copy_html_assets(output_dir):
     if os.path.exists(dst): shutil.rmtree(dst)
     if os.path.exists(src): shutil.copytree(src, dst)
 
-def job_filterer():
-    append("""<script>
-                function toggleJob(jobName) {
-                const btn = document.querySelector(`[data-job-filter="${CSS.escape(jobName)}"]`);
-                const cards = document.querySelectorAll(`[data-job-card="${CSS.escape(jobName)}"]`);
-
-                btn.classList.toggle("inactive");
-
-                const hidden = btn.classList.contains("inactive");
-                cards.forEach(card => {card.style.display = hidden ? "none" : ""});
-                }
-
-                function showAllJobs() {
-                document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.remove("inactive"));
-                document.querySelectorAll(".job-card").forEach(card => card.style.display = "");
-                }
-
-                function hideAllJobs() {
-                document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.add("inactive"));
-                document.querySelectorAll(".job-card").forEach(card => card.style.display = "none");
-                }
-                </script>""")
+def job_filter_js():
+    return """
+    <script>
+    function toggleJob(jobName) {
+      const btn = document.querySelector(`[data-job-filter="${CSS.escape(jobName)}"]`);
+      const cards = document.querySelectorAll(`[data-job-card="${CSS.escape(jobName)}"]`);
+    
+      btn.classList.toggle("inactive");
+    
+      const hidden = btn.classList.contains("inactive");
+      cards.forEach(card => {
+        card.style.display = hidden ? "none" : "";
+      });
+    }
+    
+    function showAllJobs() {
+      document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.remove("inactive"));
+      document.querySelectorAll(".job-card").forEach(card => card.style.display = "");
+    }
+    
+    function hideAllJobs() {
+      document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.add("inactive"));
+      document.querySelectorAll(".job-card").forEach(card => card.style.display = "none");
+    }
+    </script>
+    """
 
 def render_html(spoiler_data: dict) -> str:
     html_parts = []
@@ -56,7 +60,6 @@ def render_html(spoiler_data: dict) -> str:
     append("<meta charset='utf-8'>")
     append("<title>Bravely Spoiler</title>")
     append("<style>")
-    job_filterer()
     append("""body {font-family: Arial, sans-serif; margin: 20px}
               h1, h2, h3, h4 {margin-top: 1.2em}
               table {border-collapse: collapse; margin-bottom: 20px}
@@ -84,6 +87,7 @@ def render_html(spoiler_data: dict) -> str:
                 .job-card-left {text-align: left}
                 .job-portrait {width: 140px}}""")
     append("</style>")
+    append(job_filter_js())
     append("</head><body>")
 
     append("<h1>Spoiler Log</h1>")
