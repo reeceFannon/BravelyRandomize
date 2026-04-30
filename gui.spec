@@ -10,9 +10,7 @@ a = Analysis(
     ],
     pathex=[],
     binaries=[],
-    datas=[
-        ('json/*.json', 'json'),
-    ],
+    datas=[('json/*.json', 'json'), ('imgs/**/*', 'imgs')],
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],

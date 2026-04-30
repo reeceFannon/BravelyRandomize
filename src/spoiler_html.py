@@ -1,3 +1,6 @@
+import os
+import sys
+import shutil
 import html
 
 def esc(x):
@@ -8,6 +11,17 @@ def portrait_path(game, job_name):
 
 def icon_path(game, job_name):
     return f"imgs/{game}/Icons/{job_name}.png"
+
+def resource_path(relative_path):
+    if hasattr(sys, "_MEIPASS"): return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.dirname(os.path.dirname(__file__)), relative_path)
+
+
+def copy_html_assets(output_dir):
+    src = resource_path("imgs")
+    dst = os.path.join(output_dir, "imgs")
+    if os.path.exists(dst): shutil.rmtree(dst)
+    if os.path.exists(src): shutil.copytree(src, dst)
 
 def render_html(spoiler_data: dict) -> str:
     html_parts = []
@@ -30,9 +44,7 @@ def render_html(spoiler_data: dict) -> str:
               summary:hover {text-decoration: underline}
               details > table {margin-top: 0.5em}
               .job-card-grid {display: grid; gap: 18px; max-width: 1100px}
-              .job-card {display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start;
-                         background: white; border: 1px solid #ddd; border-radius: 12px; padding: 14px;
-                         box-shadow: 0 2px 8px rgba(0,0,0,0.06)}
+              .job-card {display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; background: white; border: 1px solid #ddd; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06)}
               .job-card-left {text-align: center}
               .job-portrait {width: 170px; max-width: 100%; height: auto; object-fit: contain}
               .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px}
@@ -52,52 +64,16 @@ def render_html(spoiler_data: dict) -> str:
     append(f"<p><b>Seed:</b> {esc(seed)}</p>")
 
     jobs = spoiler_data.get("jobs", {})
-
     if jobs:
         append("<h2>Jobs</h2>")
 
-        stat_rows = jobs.get("stat_affinities", [])
-        if stat_rows:
-            append("<details>")
-            append("<summary><strong>Job Stat Affinities</strong></summary>")
-            append("<table>")
-            stats = list(stat_rows[0]["stats"].keys())
-            append("<tr><th>Job</th>" + "".join(f"<th>{esc(s)}</th>" for s in stats) + "</tr>")
-
-            for row in stat_rows:
-                append(
-                    f"<tr><td>{esc(row['job'])}</td>"
-                    + "".join(f"<td>{esc(row['stats'][s])}%</td>" for s in stats)
-                    + "</tr>"
-                )
-
-            append("</table>")
-            append("</details>")
-
-        equip_rows = jobs.get("equipment_aptitudes", [])
-        if equip_rows:
-            append("<details>")
-            append("<summary><strong>Job Equipment Aptitudes</strong></summary>")
-            append("<table>")
-            equips = list(equip_rows[0]["aptitudes"].keys())
-            append("<tr><th>Job</th>" + "".join(f"<th>{esc(e)}</th>" for e in equips) + "</tr>")
-
-            for row in equip_rows:
-                append(
-                    f"<tr><td>{esc(row['job'])}</td>"
-                    + "".join(
-                        f"<td>{esc(row['aptitudes'][e]['grade'])}</td>"
-                        for e in equips
-                    )
-                    + "</tr>"
-                )
-
-            append("</table>")
-            append("/details>")
-
+        #=============
+        #JOB ABILITIES
+        #=============
         ability_rows = jobs.get("job_abilities", [])
         if ability_rows:
-            append("<h3>Job Abilities</h3>")
+            append("<details>")
+            append("<summary><strong>Job Abilities</strong></summary>")
             append("<div class='job-card-grid'>")
 
             for row in ability_rows:
@@ -130,11 +106,60 @@ def render_html(spoiler_data: dict) -> str:
                 append("</div>")
 
             append("</div>")
+            append("</details>")
+        
+        #===================
+        #JOB STAT AFFINITIES
+        #===================
+        stat_rows = jobs.get("stat_affinities", [])
+        if stat_rows:
+            append("<details>")
+            append("<summary><strong>Job Stat Affinities</strong></summary>")
+            append("<table>")
+            stats = list(stat_rows[0]["stats"].keys())
+            append("<tr><th>Job</th>" + "".join(f"<th>{esc(s)}</th>" for s in stats) + "</tr>")
 
+            for row in stat_rows:
+                append(
+                    f"<tr><td>{esc(row['job'])}</td>"
+                    + "".join(f"<td>{esc(row['stats'][s])}%</td>" for s in stats)
+                    + "</tr>"
+                )
+
+            append("</table>")
+            append("</details>")
+
+        #===================
+        #JOB EQUIPMENT RANKS
+        #===================
+        equip_rows = jobs.get("equipment_aptitudes", [])
+        if equip_rows:
+            append("<details>")
+            append("<summary><strong>Job Equipment Aptitudes</strong></summary>")
+            append("<table>")
+            equips = list(equip_rows[0]["aptitudes"].keys())
+            append("<tr><th>Job</th>" + "".join(f"<th>{esc(e)}</th>" for e in equips) + "</tr>")
+
+            for row in equip_rows:
+                append(
+                    f"<tr><td>{esc(row['job'])}</td>"
+                    + "".join(
+                        f"<td>{esc(row['aptitudes'][e]['grade'])}</td>"
+                        for e in equips
+                    )
+                    + "</tr>"
+                )
+
+            append("</table>")
+            append("</details>")
+
+    #=============
+    #MAGIC LEVELS
+    #=============
     magic = spoiler_data.get("magic", {})
-
     if magic:
-        append("<h2>Magic</h2>")
+        append("<details>")
+        append("<summary><strong>Magic</strong></summary>")
 
         for mage in magic.get("mages", []):
             append(f"<h3>{esc(mage['name'])}</h3>")
@@ -155,14 +180,18 @@ def render_html(spoiler_data: dict) -> str:
                 )
 
             append("</table>")
+        append("</details>")
 
+    #============
+    #BD TREASURES
+    #============
     treasures = spoiler_data.get("treasures", {})
-
     if treasures:
         treasure_locations = treasures.get("locations", [])
 
         if treasure_locations:
-            append("<h2>Treasures</h2>")
+            append("<details>")
+            append("<summary><strong>Treasure Locations</strong></summary>")
 
             for loc in treasure_locations:
                 append(f"<h3>{esc(loc.get('location', ''))}</h3>")
@@ -179,11 +208,15 @@ def render_html(spoiler_data: dict) -> str:
                     )
 
                 append("</table>")
+            append("</details>")
 
     append("</body></html>")
     return "\n".join(html_parts)
 
 
 def writeHTML(spoiler_data: dict, path: str):
+    output_dir = os.path.dirname(path)
     spoilers = render_html(spoiler_data)
+
+    copy_html_assets(output_dir)
     with open(path, "w", encoding="utf-8") as f: f.write(spoilers)
