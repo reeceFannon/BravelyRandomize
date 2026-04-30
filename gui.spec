@@ -10,7 +10,7 @@ a = Analysis(
     ],
     pathex=[],
     binaries=[],
-    datas=[('json/*.json', 'json'), ('imgs/*/*', 'imgs')],
+    datas=[('json/*.json', 'json'), Tree('imgs', prefix='imgs')],
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],
