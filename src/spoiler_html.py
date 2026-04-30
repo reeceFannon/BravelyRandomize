@@ -16,12 +16,34 @@ def resource_path(relative_path):
     if hasattr(sys, "_MEIPASS"): return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.dirname(os.path.dirname(__file__)), relative_path)
 
-
 def copy_html_assets(output_dir):
     src = resource_path("imgs")
     dst = os.path.join(output_dir, "imgs")
     if os.path.exists(dst): shutil.rmtree(dst)
     if os.path.exists(src): shutil.copytree(src, dst)
+
+def job_filterer():
+    append("""<script>
+                function toggleJob(jobName) {
+                const btn = document.querySelector(`[data-job-filter="${CSS.escape(jobName)}"]`);
+                const cards = document.querySelectorAll(`[data-job-card="${CSS.escape(jobName)}"]`);
+
+                btn.classList.toggle("inactive");
+
+                const hidden = btn.classList.contains("inactive");
+                cards.forEach(card => {card.style.display = hidden ? "none" : ""});
+                }
+
+                function showAllJobs() {
+                document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.remove("inactive"));
+                document.querySelectorAll(".job-card").forEach(card => card.style.display = "");
+                }
+
+                function hideAllJobs() {
+                document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.add("inactive"));
+                document.querySelectorAll(".job-card").forEach(card => card.style.display = "none");
+                }
+                </script>""")
 
 def render_html(spoiler_data: dict) -> str:
     html_parts = []
@@ -34,6 +56,7 @@ def render_html(spoiler_data: dict) -> str:
     append("<meta charset='utf-8'>")
     append("<title>Bravely Spoiler</title>")
     append("<style>")
+    job_filterer()
     append("""body {font-family: Arial, sans-serif; margin: 20px}
               h1, h2, h3, h4 {margin-top: 1.2em}
               table {border-collapse: collapse; margin-bottom: 20px}
@@ -52,6 +75,10 @@ def render_html(spoiler_data: dict) -> str:
               .job-abilities-table {width: 100%; margin-bottom: 0}
               .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 70px}
               .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 90px}
+              .job-filter-grid {display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px}
+              .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
+              .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
+              .job-filter-btn img {width: 100%; height: 100%; object-fit: contain}
               @media (max-width: 700px) {
                 .job-card {grid-template-columns: 1fr}
                 .job-card-left {text-align: left}
@@ -74,14 +101,32 @@ def render_html(spoiler_data: dict) -> str:
         if ability_rows:
             append("<details>")
             append("<summary><strong>Job Abilities</strong></summary>")
-            append("<div class='job-card-grid'>")
 
+            append("<div style='margin-bottom: 10px'>")
+            append("<button onclick='showAllJobs()'>Show All</button> ")
+            append("<button onclick='hideAllJobs()'>Hide All</button>")
+            append("</div>")
+
+            append("<div class='job-filter-grid'>")
+            for row in ability_rows:
+                job = row["job"]
+                icon = icon_path(game, job)
+
+                append(f"<button class='job-filter-btn' "
+                            f"data-job-filter='{esc(job)}' "
+                            f"onclick='toggleJob({html.escape(repr(job))})' "
+                            f"title='{esc(job)}'>"
+                            f"<img src='{esc(icon)}' alt='{esc(job)}'>"
+                        f"</button>")
+            append("</div>")
+
+            append("<div class='job-card-grid'>")
             for row in ability_rows:
                 job = row['job']
                 specialty = row['specialty']['name']
                 img = portrait_path(game, job)
 
-                append("<div class='job-card'>")
+                append(f"<div class='job-card' data-job-card='{esc(job)}'>")
                 append("<div class='job-card-left'>")
                 append(f"<img class='job-portrait' src='{esc(img)}'>")
                 append(f"<div class='job-name'>{esc(job)}</div>")
