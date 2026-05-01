@@ -12,16 +12,6 @@ def portrait_path(game, job_name):
 def icon_path(game, job_name):
     return f"imgs/{game}/Icons/{job_name}.png"
 
-def resource_path(relative_path):
-    if hasattr(sys, "_MEIPASS"): return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.dirname(os.path.dirname(__file__)), relative_path)
-
-def copy_html_assets(output_dir):
-    src = resource_path("imgs")
-    dst = os.path.join(output_dir, "imgs")
-    if os.path.exists(dst): shutil.rmtree(dst)
-    if os.path.exists(src): shutil.copytree(src, dst)
-
 def job_filter_js():
     return """
     <script>
@@ -264,8 +254,5 @@ def render_html(spoiler_data: dict) -> str:
 
 
 def writeHTML(spoiler_data: dict, path: str):
-    output_dir = os.path.dirname(path)
     spoilers = render_html(spoiler_data)
-
-    copy_html_assets(output_dir)
     with open(path, "w", encoding="utf-8") as f: f.write(spoilers)

@@ -1,6 +1,7 @@
 # -*- mode: python -*-
 
 block_cipher = None
+data_files = [('json/*.json', 'json'), ('/imgs', '/imgs')]
 
 a = Analysis(
     [
@@ -10,13 +11,7 @@ a = Analysis(
     ],
     pathex=[],
     binaries=[],
-    datas=[
-        ('json/*.json', 'json'),
-        ('imgs/BD/Portraits/*', 'imgs/BD/Portraits'),
-        ('imgs/BD/Icons/*', 'imgs/BD/Icons'),
-        ('imgs/BS/Portraits/*', 'imgs/BS/Portraits'),
-        ('imgs/BS/Icons/*', 'imgs/BS/Icons'),
-    ],
+    datas=data_files,
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],
