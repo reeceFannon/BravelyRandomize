@@ -1,6 +1,3 @@
-import os
-import sys
-import shutil
 import html
 
 def esc(x):
@@ -11,6 +8,26 @@ def portrait_path(game, job_name):
 
 def icon_path(game, job_name):
     return f"imgs/{game}/Icons/{job_name}.png"
+
+def magic_path(mage_name):
+    return f"imgs/Magic/{mage_name}.png"
+
+def location_path(loc_name):
+    return f"imgs/BD/Locations/{loc_name}.png"
+
+def aptitude_path(grade):
+    return f"imgs/BS/Aptitudes/{grade}.png"
+
+def ability_class(ability_type):
+    match ability_type:
+        case: "command":
+            return "ability-command"
+        case: "support":
+            return "ability-support"
+        case: "magic_or_summon_level":
+            return "ability-magic"
+        case _:
+            return ""
 
 def job_filter_js():
     return """
@@ -68,10 +85,17 @@ def render_html(spoiler_data: dict) -> str:
               .job-abilities-table {width: 100%; margin-bottom: 0}
               .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 70px}
               .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 90px}
+              .ability-command {background-color: #ffe5cc}
+              .ability-support {background-color: #cce5ff}
+              .ability-magic {background-color: #f8cccc}
               .job-filter-grid {display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px}
               .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
               .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
               .job-filter-btn img {width: 100%; height: 100%; object-fit: contain}
+              .section-image {display: block; max-width: 520px; width: 100%; height: auto; margin: 8px 0 14px; border-radius: 10px}
+              .aptitude-table th, .aptitude-table td {text-align: center; vertical-align: middle}
+              .aptitude-table th:first-child, .aptitude-table td:first-child {text-align: left}
+              .aptitude-icon {width: 34px; height: 34px; object-fit: contain; display: block; margin: 0 auto}
               @media (max-width: 700px) {
                 .job-card {grid-template-columns: 1fr}
                 .job-card-left {text-align: left}
@@ -132,8 +156,9 @@ def render_html(spoiler_data: dict) -> str:
                 append("<tr><th>Level</th><th>Ability</th><th>SP Cost</th></tr>")
 
                 for abil in row.get("abilities", []):
+                    cls = ability_class(abil.get('ability_type', ''))
                     append(
-                        f"<tr>"
+                        f"<tr class='{esc(cls)}'>"
                         f"<td>{esc(abil.get('level', ''))}</td>"
                         f"<td>{esc(abil.get('name', ''))}</td>"
                         f"<td>{esc(abil.get('sp_cost', ''))}</td>"
@@ -175,19 +200,19 @@ def render_html(spoiler_data: dict) -> str:
         if equip_rows:
             append("<details>")
             append("<summary><strong>Job Equipment Aptitudes</strong></summary>")
-            append("<table>")
+            append("<table class='aptitude-table'>")
             equips = list(equip_rows[0]["aptitudes"].keys())
             append("<tr><th>Job</th>" + "".join(f"<th>{esc(e)}</th>" for e in equips) + "</tr>")
 
             for row in equip_rows:
-                append(
-                    f"<tr><td>{esc(row['job'])}</td>"
-                    + "".join(
-                        f"<td>{esc(row['aptitudes'][e]['grade'])}</td>"
-                        for e in equips
-                    )
-                    + "</tr>"
-                )
+                job = row['job']
+                append(f"<tr><td>{esc(job)}</td>")
+                for e in equips:
+                    grade = row['aptitudes'][e].get('grade', '')
+                    img = aptitude_path(grade)
+                    append(f"<td><img class='aptitude-icon' src='{esc(img)}' title='{esc(grade)}'></td>")
+
+                append("</tr>")
 
             append("</table>")
             append("</details>")
@@ -201,7 +226,11 @@ def render_html(spoiler_data: dict) -> str:
         append("<summary><strong>Magic</strong></summary>")
 
         for mage in magic.get("mages", []):
-            append(f"<h3>{esc(mage['name'])}</h3>")
+            mage_name = mage.get('name', '')
+            img = magic_path(mage_name)
+
+            append(f"<h3>{esc(mage_name)}</h3>")
+            append(f"<img class='section-image' src='{esc(img)}'>")
             append("<table>")
             append("<tr><th>Level</th><th>Spells</th></tr>")
 
@@ -233,7 +262,11 @@ def render_html(spoiler_data: dict) -> str:
             append("<summary><strong>Treasure Locations</strong></summary>")
 
             for loc in treasure_locations:
-                append(f"<h3>{esc(loc.get('location', ''))}</h3>")
+                loc_name = loc.get('location', '')
+                img = location_path(loc_name)
+
+                append(f"<h3>{esc(loc_name)}</h3>")
+                append(f"<img class='section-image' src='{esc(img)}'>")
                 append("<table>")
                 append("<tr><th>Treasure</th><th>Quantity</th></tr>")
 
