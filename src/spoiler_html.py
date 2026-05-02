@@ -9,8 +9,8 @@ def portrait_path(game, job_name):
 def icon_path(game, job_name):
     return f"imgs/{game}/Icons/{job_name}.png"
 
-def magic_path(mage_name):
-    return f"imgs/Magic/{mage_name}.png"
+def magic_path(game, mage_name):
+    return f"imgs/{game}/Magic/{mage_name}.png"
 
 def location_path(loc_name):
     return f"imgs/BD/Locations/{loc_name}.png"
@@ -20,14 +20,10 @@ def aptitude_path(grade):
 
 def ability_class(ability_type):
     match ability_type:
-        case: "command":
-            return "ability-command"
-        case: "support":
-            return "ability-support"
-        case: "magic_or_summon_level":
-            return "ability-magic"
-        case _:
-            return ""
+        case "command": return "ability-command"
+        case "support": return "ability-support"
+        case "magic_or_summon_level": return "ability-magic"
+        case _: return ""
 
 def job_filter_js():
     return """
@@ -227,7 +223,7 @@ def render_html(spoiler_data: dict) -> str:
 
         for mage in magic.get("mages", []):
             mage_name = mage.get('name', '')
-            img = magic_path(mage_name)
+            img = magic_path(game, mage_name)
 
             append(f"<h3>{esc(mage_name)}</h3>")
             append(f"<img class='section-image' src='{esc(img)}'>")
