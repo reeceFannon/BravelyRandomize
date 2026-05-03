@@ -27,6 +27,9 @@ def ability_class(ability_type: str):
         case "job_or_magic_command": return "ability-magic"
         case _: return ""
 
+def json_path(game: str):
+    return f"assets/{game}/abilities.json"
+
 def ability_description(ability_descriptions: dict, job: str, ability: str):
     return ability_descriptions.get(job, {}).get(ability, {}).get("Description", "")
 
@@ -62,7 +65,7 @@ def render_html(spoiler_data: dict) -> str:
     append = html_parts.append
     game = spoiler_data.get('game')
     seed = spoiler_data.get('seed')
-    with open(f"assets/{game}/abilities.json", "r", encoding="utf-8") as f: ability_descriptions = json.load(f) 
+    with open(json_path(game), "r", encoding="utf-8") as f: ability_descriptions = json.load(f) 
 
     append("<!DOCTYPE html>")
     append("<html><head>")
@@ -90,11 +93,11 @@ def render_html(spoiler_data: dict) -> str:
               .ability-command {background-color: #ffe5cc}
               .ability-support {background-color: #cce5ff}
               .ability-magic {background-color: #f8cccc}
-              .ability-tooltip-row {position: relative; cursor: help}
-              .ability-tooltip-row:hover {filter: brightness(0.97)}
+              .ability-tooltip {position: relative; cursor: help}
+              .ability-tooltip:hover {filter: brightness(0.97)}
               .tooltip-container {position: absolute; left: 0; top: 0; width: 0; height: 0; padding: 0; border: none}
               .tooltip-text {visibility: hidden; opacity: 0; position: absolute; left: 0; top: 100%; width: 300px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 100; transition: opacity 0.15s ease}
-              .ability-tooltip-row:hover .tooltip-text {visibility: visible; opacity: 1}
+              .ability-tooltip:hover .tooltip-text {visibility: visible; opacity: 1}
               .job-filter-grid {display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px}
               .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
               .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
