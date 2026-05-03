@@ -1,29 +1,34 @@
 import html
+import json
 
-def esc(x):
+def esc(x: str):
     return html.escape(str(x))
 
-def portrait_path(game, job_name):
-    return f"imgs/{game}/Portraits/{job_name}.webp"
+def portrait_path(game: str, job_name: str):
+    return f"assets/{game}/Portraits/{job_name}.webp"
 
-def icon_path(game, job_name):
-    return f"imgs/{game}/Icons/{job_name}.png"
+def icon_path(game: str, job_name: str):
+    return f"assets/{game}/Icons/{job_name}.png"
 
-def magic_path(game, mage_name):
-    return f"imgs/{game}/Magic/{mage_name}.png"
+def magic_path(game: str, mage_name: str):
+    return f"assets/{game}/Magic/{mage_name}.png"
 
-def location_path(loc_name):
-    return f"imgs/BD/Locations/{loc_name}.png"
+def location_path(loc_name: str):
+    return f"assets/BD/Locations/{loc_name}.png"
 
-def aptitude_path(grade):
-    return f"imgs/BS/Aptitudes/{grade}.png"
+def aptitude_path(grade: str):
+    return f"assets/BS/Aptitudes/{grade}.png"
 
-def ability_class(ability_type):
+def ability_class(ability_type: str):
     match ability_type:
         case "command": return "ability-command"
         case "support": return "ability-support"
         case "magic_or_summon_level": return "ability-magic"
+        case "job_or_magic_command": return "ability-magic"
         case _: return ""
+
+def ability_description(ability_descriptions: dict, job: str, ability: str):
+    return ability_descriptions.get(job, {}).get(ability, {}).get("Description", "")
 
 def job_filter_js():
     return """
@@ -57,6 +62,7 @@ def render_html(spoiler_data: dict) -> str:
     append = html_parts.append
     game = spoiler_data.get('game')
     seed = spoiler_data.get('seed')
+    with open(f"assets/{game}/abilities.json", "r", encoding="utf-8") as f: ability_descriptions = json.load(f) 
 
     append("<!DOCTYPE html>")
     append("<html><head>")
@@ -84,6 +90,11 @@ def render_html(spoiler_data: dict) -> str:
               .ability-command {background-color: #ffe5cc}
               .ability-support {background-color: #cce5ff}
               .ability-magic {background-color: #f8cccc}
+              .ability-tooltip-row {position: relative; cursor: help}
+              .ability-tooltip-row:hover {filter: brightness(0.97)}
+              .tooltip-container {position: absolute; left: 0; top: 0; width: 0; height: 0; padding: 0; border: none}
+              .tooltip-text {visibility: hidden; opacity: 0; position: absolute; left: 0; top: 100%; width: 300px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 100; transition: opacity 0.15s ease}
+              .ability-tooltip-row:hover .tooltip-text {visibility: visible; opacity: 1}
               .job-filter-grid {display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px}
               .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
               .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
@@ -152,12 +163,20 @@ def render_html(spoiler_data: dict) -> str:
                 append("<tr><th>Level</th><th>Ability</th><th>SP Cost</th></tr>")
 
                 for abil in row.get("abilities", []):
-                    cls = ability_class(abil.get('ability_type', ''))
+                    cls = ability_class(abil.get('type', ''))
+                    ability = abil.get('name', '')
+                    level = abil.get('level', '')
+                    cost = abil.get('sp_cost', '')
+                    description = ability_description(ability_descriptions, job, ability)
+
                     append(
-                        f"<tr class='{esc(cls)}'>"
-                        f"<td>{esc(abil.get('level', ''))}</td>"
-                        f"<td>{esc(abil.get('name', ''))}</td>"
-                        f"<td>{esc(abil.get('sp_cost', ''))}</td>"
+                        f"<tr class='{esc(cls)} ability-tooltip'>"
+                        f"<td>{esc(level)}</td>"
+                        f"<td>{esc(ability)}</td>"
+                        f"<td>{esc(cost)}</td>"
+                        f"<td class='tooltip-container'>"
+                        f"<span class='tooltip-text'>{esc(description)}</span>"
+                        f"</td>"
                         f"</tr>"
                     )
 
