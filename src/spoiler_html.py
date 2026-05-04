@@ -5,19 +5,19 @@ def esc(x: str):
     return html.escape(str(x))
 
 def portrait_path(game: str, job_name: str):
-    return f"assets/{game}/Portraits/{job_name}.webp"
+    return f"imgs/{game}/Portraits/{job_name}.webp"
 
 def icon_path(game: str, job_name: str):
-    return f"assets/{game}/Icons/{job_name}.png"
+    return f"imgs/{game}/Icons/{job_name}.png"
 
 def magic_path(game: str, mage_name: str):
-    return f"assets/{game}/Magic/{mage_name}.png"
+    return f"imgs/{game}/Magic/{mage_name}.png"
 
 def location_path(loc_name: str):
-    return f"assets/BD/Locations/{loc_name}.png"
+    return f"imgs/BD/Locations/{loc_name}.png"
 
 def aptitude_path(grade: str):
-    return f"assets/BS/Aptitudes/{grade}.png"
+    return f"imgs/BS/Aptitudes/{grade}.png"
 
 def ability_class(ability_type: str):
     match ability_type:
@@ -28,10 +28,54 @@ def ability_class(ability_type: str):
         case _: return ""
 
 def json_path(game: str):
-    return f"assets/{game}/abilities.json"
+    return f"json/abilities_{game}.json"
 
-def ability_description(ability_descriptions: dict, job: str, ability: str):
-    return ability_descriptions.get(job, {}).get(ability, {}).get("Description", "")
+def ability_description(ability_descriptions: dict, ability: str):
+    return ability_descriptions.get(ability, {}).get("Description", "")
+
+def insert_sytles():
+    return """
+    <style>
+    body {font-family: Arial, sans-serif; margin: 20px}
+    h1, h2, h3, h4 {margin-top: 1.2em}
+    table {border-collapse: collapse; margin-bottom: 20px}
+    th, td {border: 1px solid #ccc; padding: 6px 10px}
+    th {background: #eee}
+    details {margin: 1em 0 1.5em}
+    summary {cursor: pointer; font-size: 1.17em; font-weight: bold; margin: 1em 0}
+    summary:hover {text-decoration: underline}
+    details > table {margin-top: 0.5em}
+    .job-card-grid {display: grid; gap: 18px; max-width: 1100px}
+    .job-card {display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; background: white; border: 1px solid #ddd; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06)}
+    .job-card-left {text-align: center}
+    .job-portrait {width: 170px; max-width: 100%; height: auto; object-fit: contain}
+    .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px}
+    .job-specialty {font-size: 0.95em; color: #555; margin-top: 4px}
+    .job-abilities-table {width: 100%; margin-bottom: 0}
+    .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 70px}
+    .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 90px}
+    .ability-command {background-color: #ffe5cc}
+    .ability-support {background-color: #cce5ff}
+    .ability-magic {background-color: #f8cccc}
+    .ability-tooltip {position: relative; cursor: help}
+    .ability-tooltip:hover {filter: brightness(0.97)}
+    .tooltip-container {position: absolute; left: 0; top: 0; width: 0; height: 0; padding: 0; border: none}
+    .tooltip-text {visibility: hidden; opacity: 0; position: absolute; left: 0; top: 100%; width: 300px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 100; transition: opacity 0.15s ease}
+    .ability-tooltip:hover .tooltip-text {visibility: visible; opacity: 1}
+    .job-filter-grid {display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px}
+    .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
+    .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
+    .job-filter-btn img {width: 100%; height: 100%; object-fit: contain}
+    .section-image {display: block; max-width: 520px; width: 100%; height: auto; margin: 8px 0 14px; border-radius: 10px}
+    .aptitude-table th, .aptitude-table td {text-align: center; vertical-align: middle}
+    .aptitude-table th:first-child, .aptitude-table td:first-child {text-align: left}
+    .aptitude-icon {width: 34px; height: 34px; object-fit: contain; display: block; margin: 0 auto}
+    @media (max-width: 700px) {
+    .job-card {grid-template-columns: 1fr}
+    .job-card-left {text-align: left}
+    .job-portrait {width: 140px}}
+    </style>
+    """
 
 def job_filter_js():
     return """
@@ -68,51 +112,14 @@ def render_html(spoiler_data: dict) -> str:
     with open(json_path(game), "r", encoding="utf-8") as f: ability_descriptions = json.load(f) 
 
     append("<!DOCTYPE html>")
-    append("<html><head>")
+    append("<html>")
+    append("<head>")
     append("<meta charset='utf-8'>")
     append("<title>Bravely Spoiler</title>")
-    append("<style>")
-    append("""body {font-family: Arial, sans-serif; margin: 20px}
-              h1, h2, h3, h4 {margin-top: 1.2em}
-              table {border-collapse: collapse; margin-bottom: 20px}
-              th, td {border: 1px solid #ccc; padding: 6px 10px}
-              th {background: #eee}
-              details {margin: 1em 0 1.5em}
-              summary {cursor: pointer; font-size: 1.17em; font-weight: bold; margin: 1em 0}
-              summary:hover {text-decoration: underline}
-              details > table {margin-top: 0.5em}
-              .job-card-grid {display: grid; gap: 18px; max-width: 1100px}
-              .job-card {display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; background: white; border: 1px solid #ddd; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06)}
-              .job-card-left {text-align: center}
-              .job-portrait {width: 170px; max-width: 100%; height: auto; object-fit: contain}
-              .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px}
-              .job-specialty {font-size: 0.95em; color: #555; margin-top: 4px}
-              .job-abilities-table {width: 100%; margin-bottom: 0}
-              .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 70px}
-              .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 90px}
-              .ability-command {background-color: #ffe5cc}
-              .ability-support {background-color: #cce5ff}
-              .ability-magic {background-color: #f8cccc}
-              .ability-tooltip {position: relative; cursor: help}
-              .ability-tooltip:hover {filter: brightness(0.97)}
-              .tooltip-container {position: absolute; left: 0; top: 0; width: 0; height: 0; padding: 0; border: none}
-              .tooltip-text {visibility: hidden; opacity: 0; position: absolute; left: 0; top: 100%; width: 300px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 100; transition: opacity 0.15s ease}
-              .ability-tooltip:hover .tooltip-text {visibility: visible; opacity: 1}
-              .job-filter-grid {display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px}
-              .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
-              .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
-              .job-filter-btn img {width: 100%; height: 100%; object-fit: contain}
-              .section-image {display: block; max-width: 520px; width: 100%; height: auto; margin: 8px 0 14px; border-radius: 10px}
-              .aptitude-table th, .aptitude-table td {text-align: center; vertical-align: middle}
-              .aptitude-table th:first-child, .aptitude-table td:first-child {text-align: left}
-              .aptitude-icon {width: 34px; height: 34px; object-fit: contain; display: block; margin: 0 auto}
-              @media (max-width: 700px) {
-                .job-card {grid-template-columns: 1fr}
-                .job-card-left {text-align: left}
-                .job-portrait {width: 140px}}""")
-    append("</style>")
+    append(insert_styles())
     append(job_filter_js())
-    append("</head><body>")
+    append("</head>")
+    append("<body>")
 
     append("<h1>Spoiler Log</h1>")
     append(f"<p><b>Game:</b> {esc(game)}</p>")
@@ -170,7 +177,7 @@ def render_html(spoiler_data: dict) -> str:
                     ability = abil.get('name', '')
                     level = abil.get('level', '')
                     cost = abil.get('sp_cost', '')
-                    description = ability_description(ability_descriptions, job, ability)
+                    description = ability_description(ability_descriptions, ability)
 
                     append(
                         f"<tr class='{esc(cls)} ability-tooltip'>"
@@ -300,7 +307,8 @@ def render_html(spoiler_data: dict) -> str:
                 append("</table>")
             append("</details>")
 
-    append("</body></html>")
+    append("</body>")
+    append("</html>")
     return "\n".join(html_parts)
 
 
