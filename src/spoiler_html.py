@@ -33,7 +33,7 @@ def json_path(game: str):
 def ability_description(ability_descriptions: dict, ability: str):
     return ability_descriptions.get(ability, {}).get("Description", "")
 
-def insert_sytles():
+def insert_styles():
     return """
     <style>
     body {font-family: Arial, sans-serif; margin: 20px}
