@@ -1,7 +1,7 @@
 # -*- mode: python -*-
 
 block_cipher = None
-data_files = [('json/*.json', 'json'), ('assets', 'assets')]
+data_files = [('json/*.json', 'json'), ('imgs', 'imgs')]
 
 a = Analysis(
     [
