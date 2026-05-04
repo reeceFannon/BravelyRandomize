@@ -57,11 +57,8 @@ def insert_styles():
     .ability-command {background-color: #ffe5cc}
     .ability-support {background-color: #cce5ff}
     .ability-magic {background-color: #f8cccc}
-    .ability-tooltip {position: relative; cursor: help}
-    .ability-tooltip:hover {filter: brightness(0.97)}
-    .tooltip-container {position: absolute; left: 0; top: 0; width: 0; height: 0; padding: 0; border: none}
-    .tooltip-text {visibility: hidden; opacity: 0; position: absolute; left: 0; top: 100%; width: 300px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 100; transition: opacity 0.15s ease}
-    .ability-tooltip:hover .tooltip-text {visibility: visible; opacity: 1}
+    .ability-tooltip:hover {filter: brightness(0.95)}
+    #floating-tooltip {display: none; position: fixed; z-index: 999999; max-width: 340px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px rgba(0,0,0,0.25); pointer-events: none; white-space: normal}
     .job-filter-grid {display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px}
     .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
     .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
@@ -77,7 +74,7 @@ def insert_styles():
     </style>
     """
 
-def job_filter_js():
+def insert_js():
     return """
     <script>
     function toggleJob(jobName) {
@@ -101,6 +98,28 @@ def job_filter_js():
       document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.add("inactive"));
       document.querySelectorAll(".job-card").forEach(card => card.style.display = "none");
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const tooltip = document.getElementById("floating-tooltip");
+
+      document.querySelectorAll("[data-tooltip]").forEach(el => {
+        el.addEventListener("mouseenter", () => {
+          const text = el.getAttribute("data-tooltip");
+          if (!text) return;
+
+          tooltip.textContent = text;
+          const offset = 14;
+          tooltip.style.left = `${event.clientX + offset}px`;
+          tooltip.style.top = `${event.clientY + offset}px`;
+          tooltip.style.display = "block";
+        });
+
+        el.addEventListener("mouseleave", () => {
+          tooltip.style.display = "none";
+          tooltip.textContent = "";
+        });
+      });
+    });
     </script>
     """
 
@@ -117,7 +136,7 @@ def render_html(spoiler_data: dict) -> str:
     append("<meta charset='utf-8'>")
     append("<title>Bravely Spoiler</title>")
     append(insert_styles())
-    append(job_filter_js())
+    append(insert_js())
     append("</head>")
     append("<body>")
 
@@ -180,13 +199,10 @@ def render_html(spoiler_data: dict) -> str:
                     description = ability_description(ability_descriptions, ability)
 
                     append(
-                        f"<tr class='{esc(cls)} ability-tooltip'>"
+                        f"<tr class='{esc(cls)} ability-tooltip' data-tooltip='{esc(description)}'>"
                         f"<td>{esc(level)}</td>"
                         f"<td>{esc(ability)}</td>"
                         f"<td>{esc(cost)}</td>"
-                        f"<td class='tooltip-container'>"
-                        f"<span class='tooltip-text'>{esc(description)}</span>"
-                        f"</td>"
                         f"</tr>"
                     )
 
@@ -307,6 +323,7 @@ def render_html(spoiler_data: dict) -> str:
                 append("</table>")
             append("</details>")
 
+    append("<div id='floating-tooltip'></div>")
     append("</body>")
     append("</html>")
     return "\n".join(html_parts)
