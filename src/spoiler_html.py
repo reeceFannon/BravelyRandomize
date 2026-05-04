@@ -5,19 +5,19 @@ def esc(x: str):
     return html.escape(str(x))
 
 def portrait_path(game: str, job_name: str):
-    return f"imgs/{game}/Portraits/{job_name}.webp"
+    return f"assets/{game}/Portraits/{job_name}.webp"
 
 def icon_path(game: str, job_name: str):
-    return f"imgs/{game}/Icons/{job_name}.png"
+    return f"assets/{game}/Icons/{job_name}.png"
 
 def magic_path(game: str, mage_name: str):
-    return f"imgs/{game}/Magic/{mage_name}.png"
+    return f"assets/{game}/Magic/{mage_name}.png"
 
 def location_path(loc_name: str):
-    return f"imgs/BD/Locations/{loc_name}.png"
+    return f"assets/BD/Locations/{loc_name}.png"
 
 def aptitude_path(grade: str):
-    return f"imgs/BS/Aptitudes/{grade}.png"
+    return f"assets/BS/Aptitudes/{grade}.png"
 
 def ability_class(ability_type: str):
     match ability_type:
@@ -28,7 +28,7 @@ def ability_class(ability_type: str):
         case _: return ""
 
 def json_path(game: str):
-    return f"json/abilities_{game}.json"
+    return f"assets/{game}/abilities.json"
 
 def ability_description(ability_descriptions: dict, ability: str):
     return ability_descriptions.get(ability, {}).get("Description", "")
