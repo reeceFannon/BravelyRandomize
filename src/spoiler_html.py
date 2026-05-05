@@ -36,28 +36,27 @@ def ability_description(ability_descriptions: dict, ability: str):
 def insert_styles():
     return """
     <style>
-    :root {--bg: #0b0c10; --text: #e6e6e6; --card: #111318; --border: #DFE0E8}
+    :root {--bg-main: #0b0c10; --text: #e6e6e6; --card: #111318; --border: #DFE0E8; --bg-dark: #272930; --bg-light: #505057}
 
-    body {font-family: Arial, sans-serif; margin: 0 auto; background: var(--bg); color: var(--text); text-align: center}
+    body {font-family: Arial, sans-serif; margin: 0 auto; background: var(--bg-main); color: var(--text); text-align: center}
     h1 {font-size: 3rem; margin: 0.4em 0 0.25em; color: var(--text)}
     h2 {font-size: 2.25rem; margin-top: 1.4em; color: var(--text)}
-    h3 {font-size: 1.65rem; margin-top: 1.25em; color: var(--text)}
     table {border-collapse: collapse; margin: 0 auto; color: var(--text)}
     th, td {border: 1px solid var(--border); color: var(--text); padding: 6px 10px}
-    th {background-color: #272930}
-    td {background-color: #505057}
+    th {background-color: var(--bg-dark)}
+    td {background-color: var(--bg-light)}
     details {margin: 1em 0 1.5em}
-    summary {cursor: pointer; font-size: 1.17em; font-weight: bold; margin: 1em 0}
+    summary {cursor: pointer; font-size: 2.25em; font-weight: bold; margin: 1em 0}
     summary:hover {text-decoration: underline}
     details > table {margin-top: 0.5em}
     .job-card-grid {display: grid; gap: 18px; max-width: 1100px; margin: 0 auto}
-    .job-card {display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; background: white; border: 1px solid #ddd; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06)}
+    .job-card {display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px #000000}
     .job-card-left {text-align: center}
     .job-portrait {width: 170px; max-width: 100%; height: auto; object-fit: contain}
-    .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px}
-    .job-specialty {font-size: 0.95em; color: #555; margin-top: 4px}
+    .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px; color: var(--text)}
+    .job-specialty {font-size: 0.95em; color: var(--text); margin-top: 4px}
     .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden; color: var(--text)}
-    .job-abilities-table th {border: 1px solid var(--border); color: var(--text); padding: 6px 10px; background-color: #272930}
+    .job-abilities-table th {border: 1px solid var(--border); color: var(--text); padding: 6px 10px; background-color: var(--bg-dark)}
     .job-abilities-table td {border: 1px solid var(--border); color: var(--text); padding: 6px 10px}
     .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 70px}
     .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 90px}
@@ -65,13 +64,14 @@ def insert_styles():
     .ability-support td {background-color: #cce5ff}
     .ability-magic td {background-color: #f8cccc}
     .ability-tooltip:hover {filter: brightness(0.95)}
-    #floating-tooltip {display: none; position: fixed; z-index: 999999; max-width: 340px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px rgba(0,0,0,0.25); pointer-events: none; white-space: normal}
+    #floating-tooltip {display: none; position: fixed; z-index: 999999; max-width: 340px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px var(--bg-main); pointer-events: none; white-space: normal}
     .job-filter-grid {display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 12px 0 18px}
-    .job-filter-btn {width: 54px; height: 54px; border: 2px solid #ccc; border-radius: 10px; background: white; cursor: pointer; padding: 4px; opacity: 1}
+    .job-filter-btn {width: 54px; height: 54px; border: 2px solid var(--border); border-radius: 10px; background: var(--bg-dark); cursor: pointer; padding: 4px; opacity: 1}
+    .job-filter-btn:hover {filter: brightness(0.95)}
     .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
     .job-filter-btn img {width: 100%; height: 100%; object-fit: contain}
     .section-image-wrap {display: inline-block; position: relative; max-width: 800px; width: 100%; margin: 0 auto}
-    .section-image-wrap::after {content: ""; position: absolute; inset: 0; box-shadow: 0 0 18px 18px var(--bg) inset; pointer-events: none}
+    .section-image-wrap::after {content: ""; position: absolute; inset: 0; box-shadow: 0 0 12px 12px var(--bg-main) inset; pointer-events: none}
     .section-image {display: block; width: 100%; height: auto}
     .aptitude-table th, .aptitude-table td {text-align: center; vertical-align: middle}
     .aptitude-table th:first-child, .aptitude-table td:first-child {text-align: left}
@@ -150,13 +150,11 @@ def render_html(spoiler_data: dict) -> str:
     append("<body>")
 
     
-    if game == "BD": append(f"<h1>Randomizer Key for Bravely Default: Patch {seed}</h1>")
-    else: append(f"<h1>Randomizer Key for Bravely Second: Patch {seed}</h1>")
+    if game == "BD": append(f"<h1>Patch {seed} Bravely Default Randomizer Spoiler Key</h1>")
+    else: append(f"<h1>Patch {seed} Bravely Second Randomizer Spoiler Key</h1>")
 
     jobs = spoiler_data.get("jobs", {})
     if jobs:
-        append("<h2>Jobs</h2>")
-
         #=============
         #JOB ABILITIES
         #=============
@@ -274,8 +272,7 @@ def render_html(spoiler_data: dict) -> str:
             mage_name = mage.get('name', '')
             img = magic_path(game, mage_name)
 
-            append(f"<h3>{esc(mage_name)}</h3>")
-            #append(f"<img class='section-image' src='{esc(img)}'>")
+            append(f"<h2>{esc(mage_name)}</h2>")
             append("<div class='section-image-wrap'>")
             append(f"<img class='section-image' src='{esc(img)}'>")
             append("</div>")
@@ -294,7 +291,7 @@ def render_html(spoiler_data: dict) -> str:
 
             append("</table>")
         append("</details>")
-
+    
     #============
     #BD TREASURES
     #============
@@ -310,8 +307,7 @@ def render_html(spoiler_data: dict) -> str:
                 loc_name = loc.get('location', '')
                 img = location_path(loc_name)
 
-                append(f"<h3>{esc(loc_name)}</h3>")
-                #append(f"<img class='section-image' src='{esc(img)}'>")
+                append(f"<h2>{esc(loc_name)}</h2>")
                 append("<div class='section-image-wrap'>")
                 append(f"<img class='section-image' src='{esc(img)}'>")
                 append("</div>")
@@ -334,7 +330,6 @@ def render_html(spoiler_data: dict) -> str:
     append("</body>")
     append("</html>")
     return "\n".join(html_parts)
-
 
 def writeHTML(spoiler_data: dict, path: str):
     spoilers = render_html(spoiler_data)
