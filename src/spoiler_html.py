@@ -30,7 +30,7 @@ def ability_class(ability_type: str):
 def json_path(game: str):
     return f"assets/{game}/abilities.json"
 
-def magic_descriptions(magic_data: dict):
+def get_mage_spells(magic_data: dict):
     return {f"{mage.get('name','')} Lv.{lvl.get('level','')}": ", ".join(spell.get("name","") for spell in lvl.get("spells",[])) for mage in magic_data.get("mages", []) for lvl in mage.get("levels", [])}
 
 def resolve_BS_magic_ability_names(ability: str, level: str):
@@ -294,7 +294,7 @@ def render_html(spoiler_data: dict) -> str:
                 append("<table class='job-abilities-table'>")
                 append("<tr><th>Level</th><th>Ability</th><th>SP Cost</th></tr>")
 
-                magic_descriptions = magic_descriptions(magic)
+                magic_descriptions = get_mage_spells(magic)
                 for abil in row.get("abilities", []):
                     cls = ability_class(abil.get('type', ''))
                     ability = abil.get('name', '')
