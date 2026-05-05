@@ -2,7 +2,7 @@ import html
 import json
 
 def esc(x: str):
-    return html.escape(str(x))
+    return html.escape(str(x), quote = False)
 
 def portrait_path(game: str, job_name: str):
     return f"assets/{game}/Portraits/{job_name}.webp"
@@ -30,8 +30,100 @@ def ability_class(ability_type: str):
 def json_path(game: str):
     return f"assets/{game}/abilities.json"
 
-def ability_description(ability_descriptions: dict, ability: str):
-    return ability_descriptions.get(ability, {}).get("Description", "")
+def magic_descriptions(magic_data: dict):
+    return {f"{mage.get('name','')} Lv.{lvl.get('level','')}": ", ".join(spell.get("name","") for spell in lvl.get("spells",[])) for mage in magic_data.get("mages", []) for lvl in mage.get("levels", [])}
+
+def resolve_BS_magic_ability_names(ability: str, level: str):
+    if ability == "Black Magic":
+        match level:
+            case "1": return "Black Magic Lv.1"
+            case "3": return "Black Magic Lv.2"
+            case "4": return "Black Magic Lv.3"
+            case "6": return "Black Magic Lv.4"
+            case "7": return "Black Magic Lv.5"
+            case "9": return "Black Magic Lv.6"
+            case "11": return "Black Magic Lv.7"
+    
+    if ability == "White Magic":
+        match level:
+            case "1": return "White Magic Lv.1"
+            case "3": return "White Magic Lv.2"
+            case "4": return "White Magic Lv.3"
+            case "5": return "White Magic Lv.4"
+            case "7": return "White Magic Lv.5"
+            case "9": return "White Magic Lv.6"
+            case "11": return "White Magic Lv.7"
+
+    if ability == "Time Magic":
+        match level:
+            case "1": return "Time Magic Lv.1"
+            case "3": return "Time Magic Lv.2"
+            case "5": return "Time Magic Lv.3"
+            case "7": return "Time Magic Lv.4"
+            case "8": return "Time Magic Lv.5"
+            case "10": return "Time Magic Lv.6"
+            case "11": return "Time Magic Lv.7"
+
+    if ability == "Summoning":
+        match level:
+            case "1": return "Summoning Lv.1"
+            case "2": return "Summoning Lv.2"
+            case "5": return "Summoning Lv.3"
+            case "9": return "Summoning Lv.4"
+            case "11": return "Summoning Lv.5"
+
+    if ability == "B/W Magic":
+        match level:
+            case "1": return "B/W Magic Lv.1"
+            case "2": return "B/W Magic Lv.2"
+            case "4": return "B/W Magic Lv.3"
+            case "6": return "B/W Magic Lv.4"
+
+    if ability == "Holy Magic":
+        match level:
+            case "1": return "Holy Magic Lv.1"
+            case "2": return "Holy Magic Lv.2"
+            case "4": return "Holy Magic Lv.3"
+            case "5": return "Holy Magic Lv.4"
+            case "8": return "Holy Magic Lv.5"
+            case "9": return "Holy Magic Lv.6"
+            case "11": return "Holy Magic Lv.7"
+
+    if ability == "Spellcraft":
+        match level:
+            case "2": return "Spellcraft Lv.1"
+            case "4": return "Spellcraft Lv.2"
+            case "5": return "Spellcraft"
+            case "6": return "Spellcraft Lv.3"
+            case "9": return "Spellcraft Lv.4"
+            case "11": return "Spellcraft Lv.5"
+
+    if ability == "Astral Magic":
+        match level:
+            case "1": return "Astral Magic Lv.1"
+            case "2": return "Astral Magic Lv.2"
+            case "4": return "Astral Magic Lv.3"
+            case "5": return "Astral Magic Lv.4"
+            case "7": return "Astral Magic Lv.5"
+            case "8": return "Astral Magic Lv.6"
+            case "11": return "Astral Magic Lv.7"
+
+    if ability == "Diabolism":
+        match level:
+            case "1": return "Diabolism Lv.1"
+            case "3": return "Diabolism Lv.2"
+            case "4": return "Diabolism Lv.3"
+            case "5": return "Diabolism Lv.4"
+            case "6": return "Diabolism Lv.5"
+            case "8": return "Diabolism Lv.6"
+            case "9": return "Diabolism Lv.7"
+            case "11": return "Diabolism Lv.8"
+
+    return ability
+
+def ability_description(game: str, ability_descriptions: dict, magic_descriptions: dict, ability: str):
+    ability = resolve_BS_magic_ability_names(ability, level) if game == "BS" else ability
+    return ability_descriptions.get(ability, {}).get("Description", "").format(spells = magic_descriptions.get(ability, ""))
 
 def insert_styles():
     return """
@@ -49,22 +141,22 @@ def insert_styles():
     summary {cursor: pointer; font-size: 2.25em; font-weight: bold; margin: 1em 0}
     summary:hover {text-decoration: underline}
     details > table {margin-top: 0.5em}
-    .job-card-grid {display: grid; gap: 18px; max-width: 1100px; margin: 0 auto}
-    .job-card {display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px #000000}
-    .job-card-left {text-align: center}
-    .job-portrait {width: 170px; max-width: 100%; height: auto; object-fit: contain}
+    .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1500px; margin: 0 auto; justify-items: center}
+    .job-card {width: 100%; max-width: 460px; display: grid; grid-template-columns: 135px minmax(0, 1fr); gap: 12px; align-items: stretch; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px #000000}
+    .job-card-left {display: grid; grid-template-rows: 1fr auto auto; text-align: center; align-items: end; min-height: 100%}
+    .job-portrait {width: 125px; height: 170px; max-width: 100%; object-fit: contain; align-self: end; justify-self: center}
     .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px; color: var(--text)}
     .job-specialty {font-size: 0.95em; color: var(--text); margin-top: 4px}
-    .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden; color: var(--text)}
+    .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden}
     .job-abilities-table th {border: 1px solid var(--border); color: var(--text); padding: 6px 10px; background-color: var(--bg-dark)}
-    .job-abilities-table td {border: 1px solid var(--border); color: var(--text); padding: 6px 10px}
-    .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 70px}
-    .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 90px}
+    .job-abilities-table td {border: 1px solid var(--border); color: #000; padding: 6px 10px}
+    .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 42px}
+    .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 52px}
     .ability-command td {background-color: #ffe5cc}
     .ability-support td {background-color: #cce5ff}
     .ability-magic td {background-color: #f8cccc}
     .ability-tooltip:hover {filter: brightness(0.95)}
-    #floating-tooltip {display: none; position: fixed; z-index: 999999; max-width: 340px; background: #222; color: white; padding: 10px 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px var(--bg-main); pointer-events: none; white-space: normal}
+    #floating-tooltip {display: none; position: fixed; z-index: 999999; max-width: 340px; background: #222; color: var(--text); padding: 10px 12px; border: 1px solid var(--border); font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px var(--bg-main); pointer-events: none; white-space: normal}
     .job-filter-grid {display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 12px 0 18px}
     .job-filter-btn {width: 54px; height: 54px; border: 2px solid var(--border); border-radius: 10px; background: var(--bg-dark); cursor: pointer; padding: 4px; opacity: 1}
     .job-filter-btn:hover {filter: brightness(0.95)}
@@ -76,10 +168,12 @@ def insert_styles():
     .aptitude-table th, .aptitude-table td {text-align: center; vertical-align: middle}
     .aptitude-table th:first-child, .aptitude-table td:first-child {text-align: left}
     .aptitude-icon {width: 34px; height: 34px; object-fit: contain; display: block; margin: 0 auto}
-    @media (max-width: 700px) {
+    @media (max-width: 1200px) {.job-card-grid {grid-template-columns: repeat(2, minmax(0, 1fr))}}
+    @media (max-width: 760px) {
+    .job-card-grid {grid-template-columns: 1fr}
     .job-card {grid-template-columns: 1fr}
-    .job-card-left {text-align: left}
-    .job-portrait {width: 140px}}
+    .job-card-left {min-height: auto}
+    .job-portrait {width: 140px; height: 170px}}
     </style>
     """
 
@@ -148,12 +242,14 @@ def render_html(spoiler_data: dict) -> str:
     append(insert_js())
     append("</head>")
     append("<body>")
-
     
     if game == "BD": append(f"<h1>Patch {seed} Bravely Default Randomizer Spoiler Key</h1>")
     else: append(f"<h1>Patch {seed} Bravely Second Randomizer Spoiler Key</h1>")
 
     jobs = spoiler_data.get("jobs", {})
+    magic = spoiler_data.get("magic", {})
+    treasures = spoiler_data.get("treasures", {})
+
     if jobs:
         #=============
         #JOB ABILITIES
@@ -198,12 +294,13 @@ def render_html(spoiler_data: dict) -> str:
                 append("<table class='job-abilities-table'>")
                 append("<tr><th>Level</th><th>Ability</th><th>SP Cost</th></tr>")
 
+                magic_descriptions = magic_descriptions(magic)
                 for abil in row.get("abilities", []):
                     cls = ability_class(abil.get('type', ''))
                     ability = abil.get('name', '')
                     level = abil.get('level', '')
                     cost = abil.get('sp_cost', '')
-                    description = ability_description(ability_descriptions, ability)
+                    description = ability_description(game, ability_descriptions, magic_descriptions, ability)
 
                     append(
                         f"<tr class='{esc(cls)} ability-tooltip' data-tooltip='{esc(description)}'>"
@@ -263,7 +360,6 @@ def render_html(spoiler_data: dict) -> str:
     #=============
     #MAGIC LEVELS
     #=============
-    magic = spoiler_data.get("magic", {})
     if magic:
         append("<details>")
         append("<summary><strong>Magic</strong></summary>")
@@ -295,7 +391,6 @@ def render_html(spoiler_data: dict) -> str:
     #============
     #BD TREASURES
     #============
-    treasures = spoiler_data.get("treasures", {})
     if treasures:
         treasure_locations = treasures.get("locations", [])
 
