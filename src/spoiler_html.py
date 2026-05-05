@@ -121,7 +121,7 @@ def resolve_BS_magic_ability_names(ability: str, level: str):
 
     return ability
 
-def ability_description(game: str, ability_descriptions: dict, magic_descriptions: dict, ability: str):
+def ability_description(game: str, ability_descriptions: dict, magic_descriptions: dict, ability: str, level: str):
     ability = resolve_BS_magic_ability_names(ability, level) if game == "BS" else ability
     return ability_descriptions.get(ability, {}).get("Description", "").format(spells = magic_descriptions.get(ability, ""))
 
@@ -300,7 +300,7 @@ def render_html(spoiler_data: dict) -> str:
                     ability = abil.get('name', '')
                     level = abil.get('level', '')
                     cost = abil.get('sp_cost', '')
-                    description = ability_description(game, ability_descriptions, magic_descriptions, ability)
+                    description = ability_description(game, ability_descriptions, magic_descriptions, ability, level)
 
                     append(
                         f"<tr class='{esc(cls)} ability-tooltip' data-tooltip='{esc(description)}'>"
