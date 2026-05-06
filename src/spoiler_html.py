@@ -1,8 +1,8 @@
 import html
 import json
 
-def esc(x: str):
-    return html.escape(str(x), quote = False)
+def esc(x: str, quote: bool = True):
+    return html.escape(str(x), quote = quote)
 
 def portrait_path(game: str, job_name: str):
     return f"assets/{game}/Portraits/{job_name}.webp"
@@ -30,8 +30,23 @@ def ability_class(ability_type: str):
 def json_path(game: str):
     return f"assets/{game}/abilities.json"
 
+def mage_to_magic(mage: str):
+    match mage:
+        case "Black Mage": return "Black Magic"
+        case "White Mage": return "White Magic"
+        case "Time Mage": return "Time Magic"
+        case "Spell Fencer": return "Sword Magic"
+        case "Summoner": return "Summoning"
+        case "Red Mage": return "B/W Magic"
+        case "Conjurer": return "Invocation"
+        case "Bishop": return "Holy Magic"
+        case "Wizard": return "Spirit Magic"
+        case "Astrologian": return "Astral Magic"
+        case "Yōkai": return "Diabolism"
+        case _: return mage
+
 def get_mage_spells(magic_data: dict):
-    return {f"{mage.get('name','')} Lv.{lvl.get('level','')}": ", ".join(spell.get("name","") for spell in lvl.get("spells",[])) for mage in magic_data.get("mages", []) for lvl in mage.get("levels", [])}
+    return {f"{mage_to_magic(mage.get('name',''))} Lv.{lvl.get('level','')}": ", ".join(spell.get("name","") for spell in lvl.get("spells",[])) for mage in magic_data.get("mages", []) for lvl in mage.get("levels", [])}
 
 def resolve_BS_magic_ability_names(ability: str, level: str):
     if ability == "Black Magic":
@@ -122,7 +137,6 @@ def resolve_BS_magic_ability_names(ability: str, level: str):
     return ability
 
 def ability_description(game: str, ability_descriptions: dict, magic_descriptions: dict, ability: str, level: str):
-    ability = resolve_BS_magic_ability_names(ability, level) if game == "BS" else ability
     return ability_descriptions.get(ability, {}).get("Description", "").format(spells = magic_descriptions.get(ability, ""))
 
 def insert_styles():
@@ -300,6 +314,7 @@ def render_html(spoiler_data: dict) -> str:
                     ability = abil.get('name', '')
                     level = abil.get('level', '')
                     cost = abil.get('sp_cost', '')
+                    ability = resolve_BS_magic_ability_names(ability, level) if game == "BS" else ability.replace("’", "'")
                     description = ability_description(game, ability_descriptions, magic_descriptions, ability, level)
 
                     append(
@@ -404,7 +419,7 @@ def render_html(spoiler_data: dict) -> str:
 
                 append(f"<h2>{esc(loc_name)}</h2>")
                 append("<div class='section-image-wrap'>")
-                append(f"<img class='section-image' src='{esc(img)}'>")
+                append(f"<img class='section-image' src='{esc(img, quote = False)}'>")
                 append("</div>")
                 append("<table>")
                 append("<tr><th>Treasure</th><th>Quantity</th></tr>")
