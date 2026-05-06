@@ -38,11 +38,11 @@ def mage_to_magic(mage: str):
         case "Spell Fencer": return "Sword Magic"
         case "Summoner": return "Summoning"
         case "Red Mage": return "B/W Magic"
-        case "Conjurer": return "Invocation"
+        case "Inquirer": return "Invocation"
         case "Bishop": return "Holy Magic"
         case "Wizard": return "Spirit Magic"
         case "Astrologian": return "Astral Magic"
-        case "Yōkai": return "Diabolism"
+        case "Yokai": return "Diabolism"
         case _: return mage
 
 def get_mage_spells(magic_data: dict):
@@ -51,143 +51,93 @@ def get_mage_spells(magic_data: dict):
 def resolve_BS_magic_ability_names(ability: str, level: str):
     if ability == "Black Magic":
         match level:
-            case "1": return "Black Magic Lv.1"
-            case "3": return "Black Magic Lv.2"
-            case "4": return "Black Magic Lv.3"
-            case "6": return "Black Magic Lv.4"
-            case "7": return "Black Magic Lv.5"
-            case "9": return "Black Magic Lv.6"
-            case "11": return "Black Magic Lv.7"
+            case 1: return "Black Magic Lv.1"
+            case 3: return "Black Magic Lv.2"
+            case 4: return "Black Magic Lv.3"
+            case 6: return "Black Magic Lv.4"
+            case 7: return "Black Magic Lv.5"
+            case 9: return "Black Magic Lv.6"
+            case 11: return "Black Magic Lv.7"
     
     if ability == "White Magic":
         match level:
-            case "1": return "White Magic Lv.1"
-            case "3": return "White Magic Lv.2"
-            case "4": return "White Magic Lv.3"
-            case "5": return "White Magic Lv.4"
-            case "7": return "White Magic Lv.5"
-            case "9": return "White Magic Lv.6"
-            case "11": return "White Magic Lv.7"
+            case 1: return "White Magic Lv.1"
+            case 3: return "White Magic Lv.2"
+            case 4: return "White Magic Lv.3"
+            case 5: return "White Magic Lv.4"
+            case 7: return "White Magic Lv.5"
+            case 9: return "White Magic Lv.6"
+            case 11: return "White Magic Lv.7"
 
     if ability == "Time Magic":
         match level:
-            case "1": return "Time Magic Lv.1"
-            case "3": return "Time Magic Lv.2"
-            case "5": return "Time Magic Lv.3"
-            case "7": return "Time Magic Lv.4"
-            case "8": return "Time Magic Lv.5"
-            case "10": return "Time Magic Lv.6"
-            case "11": return "Time Magic Lv.7"
+            case 1: return "Time Magic Lv.1"
+            case 3: return "Time Magic Lv.2"
+            case 5: return "Time Magic Lv.3"
+            case 7: return "Time Magic Lv.4"
+            case 8: return "Time Magic Lv.5"
+            case 10: return "Time Magic Lv.6"
+            case 11: return "Time Magic Lv.7"
 
     if ability == "Summoning":
         match level:
-            case "1": return "Summoning Lv.1"
-            case "2": return "Summoning Lv.2"
-            case "5": return "Summoning Lv.3"
-            case "9": return "Summoning Lv.4"
-            case "11": return "Summoning Lv.5"
+            case 1: return "Summoning Lv.1"
+            case 2: return "Summoning Lv.2"
+            case 5: return "Summoning Lv.3"
+            case 9: return "Summoning Lv.4"
+            case 11: return "Summoning Lv.5"
 
     if ability == "B/W Magic":
         match level:
-            case "1": return "B/W Magic Lv.1"
-            case "2": return "B/W Magic Lv.2"
-            case "4": return "B/W Magic Lv.3"
-            case "6": return "B/W Magic Lv.4"
+            case 1: return "B/W Magic Lv.1"
+            case 2: return "B/W Magic Lv.2"
+            case 4: return "B/W Magic Lv.3"
+            case 6: return "B/W Magic Lv.4"
 
     if ability == "Holy Magic":
         match level:
-            case "1": return "Holy Magic Lv.1"
-            case "2": return "Holy Magic Lv.2"
-            case "4": return "Holy Magic Lv.3"
-            case "5": return "Holy Magic Lv.4"
-            case "8": return "Holy Magic Lv.5"
-            case "9": return "Holy Magic Lv.6"
-            case "11": return "Holy Magic Lv.7"
+            case 1: return "Holy Magic Lv.1"
+            case 2: return "Holy Magic Lv.2"
+            case 4: return "Holy Magic Lv.3"
+            case 5: return "Holy Magic Lv.4"
+            case 8: return "Holy Magic Lv.5"
+            case 9: return "Holy Magic Lv.6"
+            case 11: return "Holy Magic Lv.7"
 
     if ability == "Spellcraft":
         match level:
-            case "2": return "Spellcraft Lv.1"
-            case "4": return "Spellcraft Lv.2"
-            case "5": return "Spellcraft"
-            case "6": return "Spellcraft Lv.3"
-            case "9": return "Spellcraft Lv.4"
-            case "11": return "Spellcraft Lv.5"
+            case 2: return "Spellcraft Lv.1"
+            case 4: return "Spellcraft Lv.2"
+            case 5: return "Spellcraft"
+            case 6: return "Spellcraft Lv.3"
+            case 9: return "Spellcraft Lv.4"
+            case 11: return "Spellcraft Lv.5"
 
     if ability == "Astral Magic":
         match level:
-            case "1": return "Astral Magic Lv.1"
-            case "2": return "Astral Magic Lv.2"
-            case "4": return "Astral Magic Lv.3"
-            case "5": return "Astral Magic Lv.4"
-            case "7": return "Astral Magic Lv.5"
-            case "8": return "Astral Magic Lv.6"
-            case "11": return "Astral Magic Lv.7"
+            case 1: return "Astral Magic Lv.1"
+            case 2: return "Astral Magic Lv.2"
+            case 4: return "Astral Magic Lv.3"
+            case 5: return "Astral Magic Lv.4"
+            case 7: return "Astral Magic Lv.5"
+            case 8: return "Astral Magic Lv.6"
+            case 11: return "Astral Magic Lv.7"
 
     if ability == "Diabolism":
         match level:
-            case "1": return "Diabolism Lv.1"
-            case "3": return "Diabolism Lv.2"
-            case "4": return "Diabolism Lv.3"
-            case "5": return "Diabolism Lv.4"
-            case "6": return "Diabolism Lv.5"
-            case "8": return "Diabolism Lv.6"
-            case "9": return "Diabolism Lv.7"
-            case "11": return "Diabolism Lv.8"
+            case 1: return "Diabolism Lv.1"
+            case 3: return "Diabolism Lv.2"
+            case 4: return "Diabolism Lv.3"
+            case 5: return "Diabolism Lv.4"
+            case 6: return "Diabolism Lv.5"
+            case 8: return "Diabolism Lv.6"
+            case 9: return "Diabolism Lv.7"
+            case 11: return "Diabolism Lv.8"
 
     return ability.replace("’", "'")
 
 def ability_description(ability_descriptions: dict, magic_descriptions: dict, ability: str):
     return ability_descriptions.get(ability, {}).get("Description", "").format(spells = magic_descriptions.get(ability, ""))
-
-def write_magic_debug(spoiler_data: dict, path: str):
-    jobs = spoiler_data.get("jobs", {})
-    magic = spoiler_data.get("magic", {})
-
-    lines = []
-    lines.append("=== JOB ABILITY DEBUG ===")
-    lines.append("")
-
-    for row in jobs.get("job_abilities", []):
-        job = row.get("job", "")
-        lines.append(f"JOB: {repr(job)}")
-
-        for abil in row.get("abilities", []):
-            name = abil.get("name", "")
-            level = abil.get("level", "")
-
-            lines.append(
-                f"  ability name: {repr(name)} | "
-                f"level: {repr(level)} | "
-                f"level type: {type(level).__name__}"
-            )
-
-        lines.append("")
-
-    lines.append("")
-    lines.append("=== MAGIC / MAGE DEBUG ===")
-    lines.append("")
-
-    for mage in magic.get("mages", []):
-        mage_name = mage.get("name", "")
-        lines.append(f"mage name: {repr(mage_name)}")
-
-        for lvl in mage.get("levels", []):
-            level = lvl.get("level", "")
-            spell_names = [
-                spell.get("name", "")
-                for spell in lvl.get("spells", [])
-            ]
-
-            lines.append(
-                f"  magic level: {repr(level)} | "
-                f"level type: {type(level).__name__} | "
-                f"spells: {repr(spell_names)}"
-            )
-
-        lines.append("")
-
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
 
 def insert_styles():
     return """
@@ -494,6 +444,3 @@ def render_html(spoiler_data: dict) -> str:
 def writeHTML(spoiler_data: dict, path: str):
     spoilers = render_html(spoiler_data)
     with open(path, "w", encoding="utf-8") as f: f.write(spoilers)
-
-    debug_path = path.rsplit(".", 1)[0] + "_magic_debug.txt"
-    write_magic_debug(spoiler_data, debug_path)
