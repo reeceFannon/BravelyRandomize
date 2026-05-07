@@ -155,17 +155,17 @@ def insert_styles():
     summary {cursor: pointer; font-size: 2.25em; font-weight: bold; margin: 1em 0}
     summary:hover {text-decoration: underline}
     details > table {margin-top: 0.5em}
-    .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1500px; margin: 0 auto; justify-items: center}
-    .job-card {width: 100%; max-width: 460px; display: grid; grid-template-columns: 135px minmax(0, 1fr); gap: 12px; align-items: stretch; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px #000000}
+    .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 2000px; margin: 0 auto; justify-items: center}
+    .job-card {width: 100%; max-width: 650px; display: grid; grid-template-columns: 135px minmax(0, 1fr); gap: 12px; align-items: stretch; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px #000000}
     .job-card-left {display: grid; grid-template-rows: 1fr auto auto; text-align: center; align-items: end; min-height: 100%}
     .job-portrait {width: 125px; height: 170px; max-width: 100%; object-fit: contain; align-self: end; justify-self: center}
     .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px; color: var(--text)}
     .job-specialty {font-size: 0.95em; color: var(--text); margin-top: 4px}
-    .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden}
-    .job-abilities-table th {border: 1px solid var(--border); color: var(--text); padding: 6px 10px; background-color: var(--bg-dark)}
-    .job-abilities-table td {border: 1px solid var(--border); color: #000; padding: 6px 10px}
-    .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 42px}
-    .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 52px}
+    .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden; font-size: 0.9em}
+    .job-abilities-table th {border: 1px solid var(--border); color: var(--text); padding: 3px 5px; background-color: var(--bg-dark)}
+    .job-abilities-table td {border: 1px solid var(--border); color: #000; padding: 3px 5px}
+    .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 30px}
+    .job-abilities-table th:last-child, .job-abilities-table td:last-child {text-align: center; width: 30px}
     .ability-command td {background-color: #ffe5cc}
     .ability-support td {background-color: #cce5ff}
     .ability-magic td {background-color: #f8cccc}
@@ -306,7 +306,7 @@ def render_html(spoiler_data: dict) -> str:
 
                 append("<div class='job-card-right'>")
                 append("<table class='job-abilities-table'>")
-                append("<tr><th>Level</th><th>Ability</th><th>SP Cost</th></tr>")
+                append("<tr><th>Lv</th><th>Ability</th><th>SP</th></tr>")
 
                 magic_descriptions = get_mage_spells(magic)
                 for abil in row.get("abilities", []):
