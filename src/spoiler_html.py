@@ -156,12 +156,12 @@ def insert_styles():
     summary:hover {text-decoration: underline}
     details > table {margin-top: 0.5em}
     .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 2000px; margin: 0 auto; justify-items: center}
-    .job-card {width: 100%; max-width: 650px; display: grid; grid-template-columns: 135px minmax(0, 1fr); gap: 12px; align-items: stretch; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px #000000}
+    .job-card {width: 100%; max-width: 650px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 12px; align-items: stretch; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px #000000}
     .job-card-left {display: grid; grid-template-rows: 1fr auto auto; text-align: center; align-items: end; min-height: 100%}
-    .job-portrait {width: 125px; height: 170px; max-width: 100%; object-fit: contain; align-self: end; justify-self: center}
-    .job-name {font-weight: bold; font-size: 1.15em; margin-top: 8px; color: var(--text)}
-    .job-specialty {font-size: 0.95em; color: var(--text); margin-top: 4px}
-    .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden; font-size: 0.9em}
+    .job-portrait {width: 300px; max-width: 100%; object-fit: contain; align-self: end; justify-self: center}
+    .job-name {font-weight: bold; font-size: 1.5em; margin-top: 8px; color: var(--text); background: #000; border: #eee; border-bottom: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px}
+    .job-specialty {font-size: 1.0em; color: var(--text); margin-top: 4px; background: #000; border: #eee; border-top: none; border-top-left-radius: 10px; border-top-right-radius: 10px}
+    .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden; font-size: 1.0em}
     .job-abilities-table th {border: 1px solid var(--border); color: var(--text); padding: 3px 5px; background-color: var(--bg-dark)}
     .job-abilities-table td {border: 1px solid var(--border); color: #000; padding: 3px 5px}
     .job-abilities-table th:first-child, .job-abilities-table td:first-child {text-align: center; width: 30px}
@@ -169,11 +169,11 @@ def insert_styles():
     .ability-command td {background-color: #ffe5cc}
     .ability-support td {background-color: #cce5ff}
     .ability-magic td {background-color: #f8cccc}
-    .ability-tooltip:hover {filter: brightness(0.95)}
+    .ability-tooltip:hover {filter: brightness(0.9)}
     #floating-tooltip {display: none; position: fixed; z-index: 999999; max-width: 340px; background: #222; color: var(--text); padding: 10px 12px; border: 1px solid var(--border); font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px var(--bg-main); pointer-events: none; white-space: normal}
     .job-filter-grid {display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 12px 0 18px}
     .job-filter-btn {width: 54px; height: 54px; border: 2px solid var(--border); border-radius: 10px; background: var(--bg-dark); cursor: pointer; padding: 4px; opacity: 1}
-    .job-filter-btn:hover {filter: brightness(0.95)}
+    .job-filter-btn:hover {filter: brightness(0.9)}
     .job-filter-btn.inactive {opacity: 0.35; filter: grayscale(100%)}
     .job-filter-btn img {width: 100%; height: 100%; object-fit: contain}
     .section-image-wrap {display: inline-block; position: relative; max-width: 800px; width: 100%; margin: 0 auto}
@@ -299,6 +299,8 @@ def render_html(spoiler_data: dict) -> str:
 
                 append(f"<div class='job-card' data-job-card='{esc(job)}'>")
                 append("<div class='job-card-left'>")
+                if game == "BD": append(f"<img class='job-portrait' src='{esc(img)}' style='height: 300px'>")
+                else: append(f"<img class='job-portrait' src='{esc(img)}' style='height: 240px'>")
                 append(f"<img class='job-portrait' src='{esc(img)}'>")
                 append(f"<div class='job-name'>{esc(job)}</div>")
                 append(f"<div class='job-specialty'>{esc(specialty)}</div>")
