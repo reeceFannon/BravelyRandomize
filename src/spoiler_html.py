@@ -155,12 +155,12 @@ def insert_styles():
     summary {cursor: pointer; font-size: 2.25em; font-weight: bold; margin: 1em 0}
     summary:hover {text-decoration: underline}
     details > table {margin-top: 0.5em}
-    .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 2000px; margin: 0 auto; justify-items: center}
+    .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 2100px; margin: 0 auto; justify-items: center}
     .job-card {width: 100%; max-width: 650px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 12px; align-items: stretch; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px #000000}
     .job-card-left {display: grid; grid-template-rows: 1fr auto auto; text-align: center; align-items: end; min-height: 100%}
     .job-portrait {width: 300px; max-width: 100%; object-fit: contain; align-self: end; justify-self: center}
-    .job-name {font-weight: bold; font-size: 1.5em; margin-top: 8px; color: var(--text); background: #000; border: #eee; border-bottom: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px}
-    .job-specialty {font-size: 1.0em; color: var(--text); margin-top: 4px; background: #000; border: #eee; border-top: none; border-top-left-radius: 10px; border-top-right-radius: 10px}
+    .job-name {font-weight: bold; font-size: 1.5em; margin-top: 8px; color: var(--text); background: #000; border: #eee; border-top: none; border-top-left-radius: 10px; border-top-right-radius: 10px}
+    .job-specialty {font-size: 1.0em; color: var(--text); background: #000; border: #eee; border-bottom: none; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px}
     .job-abilities-table {width: 100%; margin-bottom: 0 auto; border-collapse: collapse; border-radius: 12px; overflow: hidden; font-size: 1.0em}
     .job-abilities-table th {border: 1px solid var(--border); color: var(--text); padding: 3px 5px; background-color: var(--bg-dark)}
     .job-abilities-table td {border: 1px solid var(--border); color: #000; padding: 3px 5px}
@@ -301,7 +301,6 @@ def render_html(spoiler_data: dict) -> str:
                 append("<div class='job-card-left'>")
                 if game == "BD": append(f"<img class='job-portrait' src='{esc(img)}' style='height: 300px'>")
                 else: append(f"<img class='job-portrait' src='{esc(img)}' style='height: 240px'>")
-                append(f"<img class='job-portrait' src='{esc(img)}'>")
                 append(f"<div class='job-name'>{esc(job)}</div>")
                 append(f"<div class='job-specialty'>{esc(specialty)}</div>")
                 append("</div>")
