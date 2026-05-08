@@ -6,11 +6,11 @@ My personal favorite way to play these games is a sort of *four-job-fiesta* styl
 
 The HTML spoiler log allows:
 
-- Selecting only particular jobs to display, such as the jobs/commands currently equipped by the party, or only unlocked jobs
+- Select jobs to display, such as the jobs/commands currently equipped by the party, or only unlocked jobs
 
-- Selecting the current job level (the cap), which shades out all unavailable abilities at that level
+- Select the current job level (the cap) to gray out all unavailable abilities at that level
 
-- Color coded abilities (orange for command, blue for support, and red for magic)
+- Color coded abilities (orange for command, blue for support, red for magic, and gray for *not unlocked*)
 
 - Hover the cursor over any ability to display and read its description. Magics will list the correct randomized spells
 
