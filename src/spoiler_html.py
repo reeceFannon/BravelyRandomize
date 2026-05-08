@@ -30,23 +30,23 @@ def ability_class(ability_type: str):
 def json_path(game: str):
     return f"assets/{game}/abilities.json"
 
-def mage_to_magic(mage: str):
+def mage_to_magic(mage: str, level: int):
     match mage:
-        case "Black Mage": return "Black Magic"
-        case "White Mage": return "White Magic"
-        case "Time Mage": return "Time Magic"
-        case "Spell Fencer": return "Sword Magic"
-        case "Summoner": return "Summoning"
-        case "Red Mage": return "B/W Magic"
-        case "Inquirer": return "Invocation"
-        case "Bishop": return "Holy Magic"
-        case "Wizard": return "Spirit Magic"
-        case "Astrologian": return "Astral Magic"
-        case "Yokai": return "Diabolism"
+        case "Black Mage": return f"Black Magic Lv.{level}"
+        case "White Mage": return f"White Magic Lv.{level}"
+        case "Time Mage": return f"Time Magic Lv.{level}"
+        case "Spell Fencer": return f"Sword Magic Lv.{level}"
+        case "Summoner": return f"Summoning Lv.{level}"
+        case "Red Mage": return f"B/W Magic Lv.{level}"
+        case "Inquirer": return f"Invocation Lv.{level}"
+        case "Bishop": return f"Holy Magic Lv.{level}"
+        case "Astrologian": return f"Astral Magic Lv.{level}"
+        case "Yokai": return f"Diabolism Lv.{level}"
+        case "Wizard": return "Spirit Magic" # spirit magic is just called 'spirit magic'
         case _: return mage
 
 def get_mage_spells(magic_data: dict):
-    return {f"{mage_to_magic(mage.get('name',''))} Lv.{lvl.get('level','')}": ", ".join(spell.get("name","") for spell in lvl.get("spells",[])) for mage in magic_data.get("mages", []) for lvl in mage.get("levels", [])}
+    return {mage_to_magic(mage.get('name',''), lvl.get('level', '')): ", ".join(spell.get("name","") for spell in lvl.get("spells", [])) for mage in magic_data.get("mages", []) for lvl in mage.get("levels", [])}
 
 def resolve_BS_magic_ability_names(ability: str, level: str):
     if ability == "Black Magic":
@@ -142,7 +142,7 @@ def ability_description(ability_descriptions: dict, magic_descriptions: dict, ab
 def insert_styles():
     return """
     <style>
-    :root {--bg-main: #0b0c10; --text: #e6e6e6; --card: #111318; --border: #DFE0E8; --bg-dark: #272930; --bg-light: #505057}
+    :root {--bg-main: #0b0c10; --text: #e6e6e6; --card: #111318; --border: #DFE0E8; --bg-dark: #272930; --bg-light: #505057; --bg-muted: #CECED9; --text-muted: #91919E}
 
     body {font-family: Arial, sans-serif; margin: 0 auto; background: var(--bg-main); color: var(--text); text-align: center}
     h1 {font-size: 3rem; margin: 0.4em 0 0.25em; color: var(--text)}
@@ -155,7 +155,7 @@ def insert_styles():
     summary {cursor: pointer; font-size: 2.25em; font-weight: bold; margin: 1em 0}
     summary:hover {text-decoration: underline}
     details > table {margin-top: 0.5em}
-    .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 2100px; margin: 0 auto; justify-items: center}
+    .job-card-grid {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 2060px; margin: 0 auto; justify-items: center}
     .job-card {width: 100%; max-width: 650px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 12px; align-items: stretch; background: var(--bg-dark); border: 2px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px #000000}
     .job-card-left {display: grid; grid-template-rows: 1fr auto auto; text-align: center; align-items: end; min-height: 100%}
     .job-portrait {width: 300px; max-width: 100%; object-fit: contain; align-self: end; justify-self: center}
@@ -169,6 +169,7 @@ def insert_styles():
     .ability-command td {background-color: #ffe5cc}
     .ability-support td {background-color: #cce5ff}
     .ability-magic td {background-color: #f8cccc}
+    .ability-muted td {background-color: var(--bg-muted) !important; color: var(--text-muted) !important}
     .ability-tooltip:hover {filter: brightness(0.9)}
     #floating-tooltip {display: none; position: fixed; z-index: 999999; max-width: 340px; background: #222; color: var(--text); padding: 10px 12px; border: 1px solid var(--border); font-size: 0.9em; line-height: 1.35; box-shadow: 0 4px 12px var(--bg-main); pointer-events: none; white-space: normal}
     .job-filter-grid {display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 12px 0 18px}
@@ -194,26 +195,29 @@ def insert_styles():
 def insert_js():
     return """
     <script>
-    function toggleJob(jobName) {
-      const btn = document.querySelector(`[data-job-filter="${CSS.escape(jobName)}"]`);
-      const cards = document.querySelectorAll(`[data-job-card="${CSS.escape(jobName)}"]`);
-    
-      btn.classList.toggle("inactive");
-    
-      const hidden = btn.classList.contains("inactive");
-      cards.forEach(card => {
-        card.style.display = hidden ? "none" : "";
-      });
+    function toggleJob(jobName) 
+    {
+        const btn = document.querySelector(`[data-job-filter="${CSS.escape(jobName)}"]`);
+        const cards = document.querySelectorAll(`[data-job-card="${CSS.escape(jobName)}"]`);
+        
+        btn.classList.toggle("inactive");
+        
+        const hidden = btn.classList.contains("inactive");
+        cards.forEach(card => {
+            card.style.display = hidden ? "none" : "";
+        });
     }
     
-    function showAllJobs() {
-      document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.remove("inactive"));
-      document.querySelectorAll(".job-card").forEach(card => card.style.display = "");
+    function showAllJobs() 
+    {
+        document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.remove("inactive"));
+        document.querySelectorAll(".job-card").forEach(card => card.style.display = "");
     }
     
-    function hideAllJobs() {
-      document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.add("inactive"));
-      document.querySelectorAll(".job-card").forEach(card => card.style.display = "none");
+    function hideAllJobs() 
+    {
+        document.querySelectorAll(".job-filter-btn").forEach(btn => btn.classList.add("inactive"));
+        document.querySelectorAll(".job-card").forEach(card => card.style.display = "none");
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -237,6 +241,24 @@ def insert_js():
         });
       });
     });
+
+    function setJobLevelCap(levelCap) 
+    {
+        const cap = parseInt(levelCap, 10);
+
+        document.querySelectorAll(".job-abilities-table tr[data-level]").forEach(row => {
+            const rowLevel = parseInt(row.getAttribute("data-level"), 10);
+
+            if (!Number.isNaN(cap) && !Number.isNaN(rowLevel) && rowLevel > cap) 
+            {
+                row.classList.add("ability-muted");
+            } 
+            else 
+            {
+                row.classList.remove("ability-muted");
+            }
+        });
+    }
     </script>
     """
 
@@ -269,6 +291,7 @@ def render_html(spoiler_data: dict) -> str:
         #JOB ABILITIES
         #=============
         ability_rows = jobs.get("job_abilities", [])
+        max_job_level = 14 if game == "BD" else 11
         if ability_rows:
             append("<details>")
             append("<summary><strong>Job Abilities</strong></summary>")
@@ -276,6 +299,10 @@ def render_html(spoiler_data: dict) -> str:
             append("<div style='margin-bottom: 10px'>")
             append("<button onclick='showAllJobs()'>Show All</button> ")
             append("<button onclick='hideAllJobs()'>Hide All</button>")
+            append("<label for='job-level-cap' style='margin-left: 12px'>Lv:</label> ")
+            append("<select id='job-level-cap' onchange='setJobLevelCap(this.value)'>")
+            for lvl in range(1, max_job_level + 1): append(f"<option value='{lvl}'>{lvl}</option>")
+            append("</select>")
             append("</div>")
 
             append("<div class='job-filter-grid'>")
@@ -319,7 +346,7 @@ def render_html(spoiler_data: dict) -> str:
                     description = ability_description(ability_descriptions, magic_descriptions, ability)
 
                     append(
-                        f"<tr class='{esc(cls)} ability-tooltip' data-tooltip='{esc(description)}'>"
+                        f"<tr class='{esc(cls)} ability-tooltip' data-level='{esc(level)}' data-tooltip='{esc(description)}'>"
                         f"<td>{esc(level)}</td>"
                         f"<td>{esc(ability)}</td>"
                         f"<td>{esc(cost)}</td>"
